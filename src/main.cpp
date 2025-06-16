@@ -31,10 +31,10 @@ int main()
                 line.release();
                 t.join();
 
-                std::cout << "Program Stopped : " << getdatetimelocal() << std::endl;
+                std::cout << "Program Stopped: " << getdatetimelocal() << std::endl;
             });
 
-        std::cout << "Program Starting : " << getdatetimelocal() << std::endl;
+        std::cout << "Program Starting: " << getdatetimelocal() << std::endl;
 
         line = chip.get_line(23); // GPIO 23
         line.request({ "led-toggle", gpiod::line_request::DIRECTION_OUTPUT }, 0);
