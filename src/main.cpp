@@ -6,16 +6,10 @@
 #include <filesystem>
 #include <iomanip>
 #include <thread>
-#include <datastructures.hpp>
-
-// function declarations
-void shutdownTask();
-std::string getdatetimelocal();
+#include <defer.hpp>
+#include <main.hpp>
 
 //global variables
-volatile int shutdown = 0;
-gpiod::chip chip("gpiochip0");
-gpiod::line line;
 std::jthread t = std::jthread(shutdownTask);
 
 int main()
