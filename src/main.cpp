@@ -77,7 +77,7 @@ void shutdownTask()
         if (command == "quit")
         {
             shutdown = 1;
-            std::cout << "Shutting Down Now : " << getdatetimelocal() << std::endl;
+            std::cout << "Shutting Down Now: " << getdatetimelocal() << std::endl;
             break;
         }
 
