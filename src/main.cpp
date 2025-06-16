@@ -1,80 +1,52 @@
-#include <gpiod.hpp>
-#include <iostream>
-#include <chrono>
-#include <thread>
-#include <cstdlib>
-#include <filesystem>
-#include <iomanip>
-#include <thread>
-#include <defer.hpp>
-#include <main.hpp>
 
-//global variables
-std::jthread t = std::jthread(shutdownTask);
+#include <defer.hpp>
+#include <utilfuncs.hpp>
+#include <main.hpp>
 
 int main()
 {
-    using namespace std::literals;
-
     try
     {
+        using namespace std::literals;
+        static std::jthread shutdownThread = std::jthread(shutdownThreadFunction);
+
+        auto concurrent = shutdownThread.hardware_concurrency();
+
         Defer d = defer(
             []()
             {
                 line.set_value(0);
                 line.release();
-                t.join();
+                shutdownThread.request_stop();
+                shutdownThread.join();
 
-                std::cout << "Program Stopped: " << getdatetimelocal() << std::endl;
+                std::cout << "Program Stopped: " << getDateTimeLocal() << std::endl;
             });
 
-        std::cout << "Program Starting: " << getdatetimelocal() << std::endl;
+        std::cout << "Build Date: " << __DATE__ << std::endl;
+        std::cout << "Build Time: " << __TIME__ << std::endl;
+
+        std::cout << "Program Starting: " << getDateTimeLocal() << std::endl;
 
         line = chip.get_line(23); // GPIO 23
-        line.request({ "led-toggle", gpiod::line_request::DIRECTION_OUTPUT }, 0);
+        line.request({ 
+                       "led-toggle", 
+                       gpiod::line_request::DIRECTION_OUTPUT 
+                     });
 
         while (shutdown == 0)
         {           
             line.set_value(1);
-            std::this_thread::sleep_for(1s);
+            std::this_thread::sleep_for(1000ms);
             line.set_value(0);
-            std::this_thread::sleep_for(1s);
+            std::this_thread::sleep_for(1000ms);
         }
     }
     catch (const std::exception& e) 
     {
-        std::cerr << "Error: " << e.what() << getdatetimelocal() << std::endl;
+        std::cerr << "Error: " << e.what() << getDateTimeLocal() << std::endl;
         return 1;
     }
 
     return 0;
-}
-
-std::string getdatetimelocal()
-{
-    std::time_t now = std::time(nullptr);
-    std::tm *local_time = std::localtime(&now);
-    std::string asc = std::asctime(local_time);
-
-    if (!asc.empty())
-        asc.pop_back();
-
-    return asc;
-}
-
-void shutdownTask()
-{
-    std::string command;
-
-    while (std::cin >> command)
-    {
-        if (command == "quit")
-        {
-            shutdown = 1;
-            std::cout << "Shutting Down Now: " << getdatetimelocal() << std::endl;
-            break;
-        }
-
-        std::cin.clear();
-    }
 }
