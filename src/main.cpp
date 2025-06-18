@@ -2,15 +2,17 @@
 #include <defer.hpp>
 #include <utilfuncs.hpp>
 #include <main.hpp>
+#include <mutex>
+#include <condition_variable>
+
+using namespace std::literals;
 
 int main()
 {
     try
     {
-        using namespace std::literals;
+        
         static std::jthread shutdownThread = std::jthread(shutdownThreadFunction);
-
-        auto concurrent = shutdownThread.hardware_concurrency();
 
         Defer d = defer(
             []()
@@ -19,7 +21,6 @@ int main()
                 line.release();
                 shutdownThread.request_stop();
                 shutdownThread.join();
-
                 std::cout << "Program Stopped: " << getDateTimeLocal() << std::endl;
             });
 
@@ -34,12 +35,12 @@ int main()
                        gpiod::line_request::DIRECTION_OUTPUT 
                      });
 
-        while (shutdown == 0)
-        {           
+        while (shutdownFlag == false)
+        {
             line.set_value(1);
-            std::this_thread::sleep_for(1000ms);
+            std::this_thread::sleep_for(5000ms);
             line.set_value(0);
-            std::this_thread::sleep_for(1000ms);
+            std::this_thread::sleep_for(5000ms);
         }
     }
     catch (const std::exception& e) 

@@ -9,8 +9,7 @@
 #include <thread>
 #include <gpiod.hpp>
 
-
-volatile int shutdown = 0;
+std::atomic<bool> shutdownFlag(0);
 gpiod::chip chip("gpiochip0");
 gpiod::line line;
 

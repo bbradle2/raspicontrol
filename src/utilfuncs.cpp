@@ -5,10 +5,12 @@ std::string getDateTimeLocal()
     std::time_t now = std::time(nullptr);
     std::tm *local_time = std::localtime(&now);
     std::string asc = std::asctime(local_time);
-    asc.erase(std::remove_if(asc.begin(), asc.end(),
-                             [](char ch)
-                             { return std::iscntrl(static_cast<unsigned char>(ch)); }),
-              asc.end());
+    asc.erase(std::remove_if(asc.begin(), asc.end(), [](char ch)
+                                                     { 
+                                                        return std::iscntrl(static_cast<unsigned char>(ch)); 
+                                                     }),
+             asc.end()
+             );
 
     return asc;
 }
@@ -21,9 +23,13 @@ void shutdownThreadFunction()
     {
         if (command == "quit")
         {
-            shutdown = 1;
-            std::cout << "Shutting Down Now: " << getDateTimeLocal() << std::endl;
-            break;
+            bool oldValue = shutdownFlag.exchange(true);
+
+            if (oldValue == false)
+            {
+                std::cout << "Shutting Down Now: " << getDateTimeLocal() << std::endl;
+                break;
+            }
         }
 
         std::cin.clear();

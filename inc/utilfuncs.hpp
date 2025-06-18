@@ -4,8 +4,9 @@
 #include <chrono>
 #include <algorithm>
 #include <iostream>
+#include <atomic>
 
-extern volatile int shutdown;
+extern std::atomic<bool> shutdownFlag;
 // function declarations
 void shutdownThreadFunction();
 std::string getDateTimeLocal();
