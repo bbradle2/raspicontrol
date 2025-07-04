@@ -1,9 +1,15 @@
+#include <main.hpp>
+#include <random>
+#include <stdlib.h>
+#include <stdio.h>
+#include <uuid/uuid.h>
+#include <cstring>
+#include <mutex>
 
 #include <defer.hpp>
 #include <utilfuncs.hpp>
-#include <main.hpp>
-#include <mutex>
-#include <condition_variable>
+
+#define GPIO_23 23
 
 using namespace std::literals;
 
@@ -11,43 +17,56 @@ int main()
 {
     try
     {
-        
-        static std::jthread shutdownThread = std::jthread(shutdownThreadFunction);
-
-        Defer d = defer(
-            []()
-            {
-                line.set_value(0);
-                line.release();
-                shutdownThread.request_stop();
-                shutdownThread.join();
-                std::cout << "Program Stopped: " << getDateTimeLocal() << std::endl;
-            });
-
+        std::cout << "Program Starting: " << utilfuncs::getDateTimeLocal() << std::endl;
         std::cout << "Build Date: " << __DATE__ << std::endl;
         std::cout << "Build Time: " << __TIME__ << std::endl;
+        
+        // uuid_t uuid;
+        // char cuuid[37] = {};
 
-        std::cout << "Program Starting: " << getDateTimeLocal() << std::endl;
+        // uuid_generate_random(uuid);
+        // uuid_unparse_upper(uuid, cuuid);
 
-        line = chip.get_line(23); // GPIO 23
+        // std::cout << cuuid << std::endl;
+
+        // goto exit;
+
+        //shutdownFlag.store(false);
+        //static std::jthread shutdownThread = std::jthread(utilfuncs::commandThreadFunction);
+
+         Defer d = defer(
+                         []()
+                         {
+                             //shutdownThread.request_stop();
+                             //shutdownThread.join();
+                             line.set_value(0);
+                             line.release();
+                             std::cout << "Program Stopped: " << utilfuncs::getDateTimeLocal() << std::endl;
+                         });
+
+        line = chip.get_line(GPIO_23); // GPIO 23
         line.request({ 
                        "led-toggle", 
                        gpiod::line_request::DIRECTION_OUTPUT 
                      });
 
-        while (shutdownFlag == false)
-        {
-            line.set_value(1);
-            std::this_thread::sleep_for(5000ms);
+        //while (shutdownFlag.load() == false)
+        //{
             line.set_value(0);
-            std::this_thread::sleep_for(5000ms);
-        }
+            std::this_thread::sleep_for(1000ms);
+            line.set_value(1);
+            std::this_thread::sleep_for(1000ms);
+        //}
     }
     catch (const std::exception& e) 
     {
-        std::cerr << "Error: " << e.what() << getDateTimeLocal() << std::endl;
+        std::cerr << "Error: " << e.what() << utilfuncs::getDateTimeLocal() << std::endl;
         return 1;
     }
 
+exit:
+    //std::cout << "Program Stopped: " << utilfuncs::getDateTimeLocal() << std::endl;
     return 0;
+
+
 }

@@ -6,7 +6,11 @@
 #include <iostream>
 #include <atomic>
 
-extern std::atomic<bool> shutdownFlag;
-// function declarations
-void shutdownThreadFunction();
-std::string getDateTimeLocal();
+extern volatile std::atomic<bool> shutdownFlag;
+class utilfuncs 
+{
+    // function declarations
+    public:
+        static void commandThreadFunction();
+        static std::string getDateTimeLocal();
+};

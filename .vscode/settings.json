@@ -60,6 +60,9 @@
         "typeinfo": "cpp",
         "codecvt": "cpp",
         "iomanip": "cpp",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "cstring": "cpp",
+        "condition_variable": "cpp",
+        "mutex": "cpp"
     }
 }

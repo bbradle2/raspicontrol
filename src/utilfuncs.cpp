@@ -1,6 +1,6 @@
 #include <utilfuncs.hpp>
 
-std::string getDateTimeLocal()
+std::string utilfuncs::getDateTimeLocal()
 {
     std::time_t now = std::time(nullptr);
     std::tm *local_time = std::localtime(&now);
@@ -15,23 +15,21 @@ std::string getDateTimeLocal()
     return asc;
 }
 
-void shutdownThreadFunction()
+void utilfuncs::commandThreadFunction()
 {
+    std::cout << "Start utilfuncs::commandThreadFunction: " << getDateTimeLocal() << std::endl;
     std::string command;
 
     while (std::cin >> command)
     {
         if (command == "quit")
         {
-            bool oldValue = shutdownFlag.exchange(true);
-
-            if (oldValue == false)
-            {
-                std::cout << "Shutting Down Now: " << getDateTimeLocal() << std::endl;
-                break;
-            }
+            shutdownFlag.store(true);
+            break;
         }
 
         std::cin.clear();
     }
+
+    std::cout << "End utilfuncs::commandThreadFunction: " << getDateTimeLocal() << std::endl;
 }
