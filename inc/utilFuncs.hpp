@@ -15,12 +15,11 @@
 #include <cryptopp/osrng.h>
 #include <cryptopp/base64.h>
 
-extern volatile std::atomic<bool> shutdownFlag;
 class utilFuncs
 {
     // function declarations
     public:
-        static void commandThreadFunction();
+        //static void commandThreadFunction();
         static std::string getDateTimeLocal();
         static std::string encrypt(const std::string &input, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv);
         static std::string decrypt(const std::string &cipher_text, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv);

@@ -15,24 +15,24 @@ std::string utilFuncs::getDateTimeLocal()
     return asc + " ";
 }
 
-void utilFuncs::commandThreadFunction()
-{
-    std::cout << "begin utilfuncs::commandThreadFunction: " << getDateTimeLocal() << std::endl;
-    std::string command;
+// void utilFuncs::commandThreadFunction()
+// {
+//     std::cout << "begin utilfuncs::commandThreadFunction: " << getDateTimeLocal() << std::endl;
+//     std::string command;
 
-    while (std::cin >> command)
-    {
-        if (command == "quit")
-        {
-            shutdownFlag.store(true);
-            break;
-        }
+//     while (std::cin >> command)
+//     {
+//         if (command == "quit")
+//         {
+//             shutdownFlag.store(true);
+//             break;
+//         }
 
-        std::cin.clear();
-    }
+//         std::cin.clear();
+//     }
 
-    std::cout << "end utilfuncs::commandThreadFunction: " << getDateTimeLocal() << std::endl;
-}
+//     std::cout << "end utilfuncs::commandThreadFunction: " << getDateTimeLocal() << std::endl;
+// }
 
 std::string utilFuncs::encrypt(const std::string &input, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv)
 {
