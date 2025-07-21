@@ -1,18 +1,89 @@
 cmake_minimum_required(VERSION 4.0.3)
+
 project(raspicontrol VERSION 1.5)
+enable_testing()
+
+include (CTest)
+#set(CTEST_MEMORYCHECK_TYPE Valgrind)
+#SET(GCC_COVERAGE_COMPILE_FLAGS "-fprofile-arcs -ftest-coverage")
+#SET(GCC_COVERAGE_LINK_FLAGS    "-lgcov")
+#add_definitions(${GCC_COVERAGE_COMPILE_FLAGS})
+#find_package(Boost REQUIRED COMPONENTS charconv)
+#find_package(SQLiteCpp REQUIRED)
+#find_package(MySQL REQUIRED)
+#ctest -T memcheck --test-dir build
+
+find_package(SQLite3 REQUIRED)
+find_package(Poco CONFIG REQUIRED Foundation Net Util Crypto NetSSL)
+
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # set(CMAKE_C_COMPILER clang) #CMAKE_CXX_STANDARD has to = 20 to use clang
 # set(CMAKE_CXX_COMPILER clang++)
+add_compile_options(-W -Wall -Werror)
+  # For a general case, not recommended, to preserve exiting cache variable
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror")
 
+#include_directories(${MYSQL_INCLUDE_DIR})
+include_directories(${Boost_INCLUDE_DIRS})
 file(GLOB SOURCES_CPP CONFIGURE_DEPENDS "src/*.cpp")
 file(GLOB SOURCES_C CONFIGURE_DEPENDS "src/*.c")
 set(SOURCES_FILES ${SOURCES_CPP} ${SOURCES_C})
 
 add_executable(${PROJECT_NAME} ${SOURCES_FILES})
+#file(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/example.db")
+
+#add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
+
+
+add_test(NAME ${PROJECT_NAME}_memchecked
+    COMMAND valgrind
+      --error-exitcode=1
+      --tool=memcheck
+      --leak-check=full --track-origins=yes
+      --errors-for-leak-kinds=definite
+      --show-leak-kinds=definite
+      --track-fds=yes
+      $<TARGET_FILE:${PROJECT_NAME}>
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
+add_test(NAME ${PROJECT_NAME}_helgrind
+    COMMAND valgrind
+      --error-exitcode=1
+      --tool=helgrind
+      --track-fds=yes
+      $<TARGET_FILE:${PROJECT_NAME}>
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
+add_test(NAME ${PROJECT_NAME}_cachegrind
+    COMMAND valgrind
+      --error-exitcode=1
+      --tool=cachegrind
+      --track-fds=yes
+      $<TARGET_FILE:${PROJECT_NAME}>
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/inc)
+
+target_link_libraries(${PROJECT_NAME} LINK_PRIVATE SQLite::SQLite3)
+target_link_libraries(${PROJECT_NAME} LINK_PRIVATE Poco::Net Poco::Foundation Poco::Util Poco::Crypto Poco::NetSSL )
 target_link_libraries(${PROJECT_NAME} LINK_PRIVATE gpiodcxx)
 target_link_libraries(${PROJECT_NAME} LINK_PRIVATE uuid)
+target_link_libraries(${PROJECT_NAME} LINK_PRIVATE crypto++)
+#target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} LINK_PRIVATE mysqlcppconn)
+
+#target_link_libraries(${PROJECT_NAME} SQLiteCpp)
+
+    # function(print_all_variables)
+    #     message(STATUS "CMake Variables:")
+    #     get_cmake_property(_variableNames VARIABLES)
+    #     list(SORT _variableNames)
+    #     foreach (_variableName ${_variableNames})
+    #         message(STATUS "${_variableName}=${${_variableName}}")
+    #     endforeach()
+    # endfunction()
+
+    # print_all_variables()

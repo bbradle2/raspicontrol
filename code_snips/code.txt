@@ -1,0 +1,190 @@
+ MySql client
+ sql::Driver *driver;
+        sql::Connection *con;
+        sql::Statement *stmt;
+        sql::ResultSet *res;
+        driver = get_driver_instance();
+
+        con = driver->connect("tcp://192.168.7.136:3306", "bbrad", "fred5858");
+
+        con->setSchema("bbb");
+
+        stmt = con->createStatement();
+        res = stmt->executeQuery("SELECT * FROM customer");
+
+        while (res->next())
+        {
+            cout << "custname: " << res->getString("custname") << endl; // Or res->getString(1)
+        }
+
+        // Clean up
+        delete res;
+        delete stmt;
+        delete con;
+
+class SSLInitializer
+{
+ 	  public:
+ 		SSLInitializer() { initializeSSL(); }
+
+ 		~SSLInitializer() { uninitializeSSL(); }
+};
+ // SSLInitializer sslInitializer;
+
+        // SSLManager::InvalidCertificateHandlerPtr ptrHandler(new AcceptCertificateHandler(false));
+        // Context::Ptr ptrContext = new Context(Context::TLS_CLIENT_USE, "");
+        // SSLManager::instance().initializeClient(0, ptrHandler, ptrContext);
+
+        // URI uri("https://www.google.com/");
+        // HTTPSClientSession s(uri.getHost(), uri.getPort(), ptrContext);
+
+        // HTTPRequest request = HTTPRequest(HTTPRequest::HTTP_GET, uri.getPath(), HTTPMessage::HTTP_1_1);
+        // s.sendRequest(request);
+        // HTTPResponse response;
+        // auto &is = s.receiveResponse(response);
+        // StreamCopier::copyStream(is, std::cout);
+
+        // string key;
+        // string value;
+        // NameValueCollection::ConstIterator ii = response.begin();
+
+        // while (ii != response.end())
+        // {
+        // key = ii->first;
+        // value = ii->second;
+        // cout << key << "------" << value << endl
+        //         << flush;
+        // ++ii;
+        // }
+
+        // static constexpr size_t AES_KEY_SIZE = 256 / 8; // AES-256
+
+        // const std::string input{"This is a secret message."};
+        // std::vector<uint8_t> key(AES_KEY_SIZE);
+        // std::vector<uint8_t> iv(CryptoPP::AES::BLOCKSIZE);
+
+        // CryptoPP::BlockingRng rand;
+        // rand.GenerateBlock(key.data(), key.size());
+        // rand.GenerateBlock(iv.data(), iv.size());
+
+        // auto cipher = utilFuncs::encrypt(input, key, iv);
+        // auto plain_text = utilFuncs::decrypt(cipher, key, iv);
+
+        // if (plain_text != input)
+        // {
+        //     std::cout << "Error: plain text doesn't match the input" << std::endl;
+        // }
+        // else
+        // {
+        //     std::cout << "input : " << input << std::endl;
+        //     std::cout << "cipher : " << cipher;
+        //     std::cout << "plain text : " << plain_text << std::endl;
+        // }
+
+        // std::cout << std::endl;
+        // char *messaggeError;
+        // int exit = 0;
+        // sqlite3 *DB;
+        // exit = sqlite3_open("example.db", &DB);
+
+        // std::string dropTableSql = "DROP TABLE PERSON;";
+        // exit = sqlite3_exec(DB, dropTableSql.c_str(), NULL, 0, &messaggeError);
+        // if (exit != SQLITE_OK)
+        // {
+        //     std::cerr << "DROP TABLE PERSON" << std::endl;
+        //     sqlite3_free(messaggeError);
+        // }
+        // else
+        // {
+        //     std::cout << "DROP TABLE PERSON Success!" << std::endl;
+        // }
+
+        // std::string createTableSql = "CREATE TABLE PERSON("
+        //                             "ID INT PRIMARY KEY     NOT NULL, "
+        //                             "NAME           TEXT    NOT NULL, "
+        //                             "SURNAME          TEXT     NOT NULL, "
+        //                             "AGE            INT     NOT NULL, "
+        //                             "ADDRESS        CHAR(50), "
+        //                             "SALARY         REAL );";
+
+        // exit = sqlite3_exec(DB, createTableSql.c_str(), NULL, 0, &messaggeError);
+
+        // if (exit != SQLITE_OK)
+        // {
+        //     std::cerr << "CREATE TABLE PERSON Error!" << std::endl;
+        //     sqlite3_free(messaggeError);
+        // }
+        // else
+        // {
+        //     std::cout << "CREATE TABLE PERSON Success!" << std::endl;
+        // }
+
+         // std::string insertSql("INSERT INTO PERSON VALUES(1, 'STEVE', 'GATES', 30, 'PALO ALTO', 1000.0);"
+         //                       "INSERT INTO PERSON VALUES(2, 'BILL', 'ALLEN', 20, 'SEATTLE', 300.22);"
+         //                       "INSERT INTO PERSON VALUES(3, 'PAUL', 'JOBS', 24, 'SEATTLE', 9900.0);");
+
+         // exit = sqlite3_exec(DB, insertSql.c_str(), NULL, 0, &messaggeError);
+         // if (exit != SQLITE_OK)
+         // {
+         //     std::cerr << "INSERT INTO PERSON Error!" << std::endl;
+         //     sqlite3_free(messaggeError);
+         // }
+         // else
+         // {
+         //     std::cout << "INSERT INTO PERSON Success!" << std::endl
+         //               << std::endl;
+         // }
+
+         // std::string selectSql = "SELECT NAME FROM PERSON;";
+         // std::cout << "SELECT NAME FROM PERSON Starting!" << std::endl;
+         // exit = sqlite3_exec(DB, selectSql.c_str(), utilFuncs::sqlCallback, NULL, NULL);
+
+         // if (exit != SQLITE_OK)
+         // {
+         //     std::cerr << "SELECT NAME FROM PERSON Error!" << std::endl;
+         //     sqlite3_free(messaggeError);
+         // }
+         // else
+         // {
+         //     std::cout << "SELECT NAME FROM PERSON Success!" << std::endl
+         //               << std::endl;
+         // }
+        // sqlite3_close(DB);
+
+         // goto exxit;
+         //  uuid_t uuid;
+         //  char cuuid[37] = {};
+
+         // uuid_generate_random(uuid);
+         // uuid_unparse_upper(uuid, cuuid);
+
+         // std::cout << cuuid << std::endl;
+
+         // goto exit;
+
+         // shutdownFlag.store(false);
+         // static std::jthread shutdownThread = std::jthread(utilfuncs::commandThreadFunction);
+
+        //   Defer d = defer(
+        //                   []()
+        //                   {
+        //                       //shutdownThread.request_stop();
+        //                       //shutdownThread.join();
+        //                       line.set_value(0);
+        //                       line.release();
+        //                       std::cout << "Program Stopped: " <<  utilFuncs::getDateTimeLocal() << std::endl;
+        //                   });
+
+          //gpiod::chip chip("gpiochip0");
+          //chip.open("gpiochip0");
+          //auto line = chip.get_line(23); // GPIO 23
+          //line.request({"led-toggle",
+          //              gpiod::line_request::DIRECTION_OUTPUT});
+
+          // while (shutdownFlag.load() == false)
+          //{
+          //line.set_value(0);
+          //std::this_thread::sleep_for(1000ms);
+          //line.set_value(1);
+          //std::this_thread::sleep_for(1000ms);
+         // //}

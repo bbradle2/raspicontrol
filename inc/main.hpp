@@ -10,5 +10,5 @@
 #include <gpiod.hpp>
 
 volatile std::atomic<bool> shutdownFlag(false);
-gpiod::chip chip("gpiochip0");
+//gpiod::chip chip("gpiochip0");
 gpiod::line line;
