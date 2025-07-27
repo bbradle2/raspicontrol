@@ -1,3 +1,158 @@
+   
+   const int NUM_PRINTERS = 3; // Number of available printers
+std::counting_semaphore<NUM_PRINTERS> printer_semaphore(NUM_PRINTERS);
+
+void print_document(int computer_id)
+{
+    std::osyncstream synced_out(std::cout);
+    synced_out << "Computer " << computer_id << " is trying to acquire a printer." << std::endl;
+    printer_semaphore.acquire(); // Acquire a printer (decrement semaphore count)
+    synced_out << "Computer " << computer_id << " acquired a printer and is printing..." << std::endl;
+    std::this_thread::sleep_for(std::chrono::seconds(2)); // Simulate printing time
+    synced_out << "Computer " << computer_id << " finished printing and is releasing the printer." << std::endl;
+    printer_semaphore.release(); // Release the printer (increment semaphore count)
+}
+
+
+std::vector<std::thread> computers;
+        for (int i = 1; i <= 5; ++i)
+        { // 5 computers trying to print
+            computers.emplace_back(print_document, i);
+        }
+
+        for (auto &t : computers)
+        {
+            //t.request_stop();
+
+            //if(t.joinable())
+                t.join();
+        }
+
+        std::cout << "All printing tasks completed." << std::endl;
+   
+    // while (true)
+    // {
+    //     if(_line.event_wait(std::chrono::milliseconds(10)))
+    //     {
+    //         auto line_event = _line.event_read();
+    //         if(line_event.event_type == line_event.RISING_EDGE)
+    //         {
+    //             std::cout << "Rising edge detected on GPIO " << line_event.source.name() << std::endl;
+    //         }
+    //         else if (line_event.event_type == line_event.FALLING_EDGE)
+    //         {
+    //             std::cout << "Falling edge detected on GPIO " << line_event.source.name() << std::endl;
+    //         }
+    //     }
+
+    //     // Small delay to prevent busy-waiting
+    // }
+struct Person
+{
+    std::string name;
+    std::string address;
+    int age;
+};
+
+#include "Poco/Data/MySQL/Connector.h" //MySQL
+#include "Poco/Data/SQLite/Connector.h" //SQLite
+#include "Poco/Data/PostgreSQL/Connector.h" //PostgreSQL
+
+
+//For MySQL and SQLite thru POCO libraries
+//There differences in sql statements between MySQL and SQLite what Connector and Session to use
+Poco::Data::MySQL::Connector::registerConnector(); //MySQL
+Poco::Data::SQLite::Connector::registerConnector(); //SQLite
+Poco::Data::PostgreSQL::Connector::registerConnector(); //PostgreSQL
+
+
+
+        // create a session
+        Session session("MySQL", "host=192.168.7.136;port=3306;db=bbb;user=user;password=password;compress=true;auto-reconnect=true"); //MySQL
+        Session session("SQLite", "example.db"); //SQLite
+        Session session("PostgreSQL", "host=192.168.7.136 port=5432 user=postgres dbname=postgres"); //PostgreSQL
+
+        session << "DROP TABLE IF EXISTS Person", now;
+
+        // (re)create table
+        session << "CREATE TABLE Person (Name VARCHAR(30), Address VARCHAR(50), Age INT)", now;
+
+        Person person =
+            {
+                "Bart Simpson",
+                "Springfield",
+                12};
+        Statement insert(session);
+        insert << "INSERT INTO Person (name, address, age) VALUES($1, $2, $3)",
+            use(person.name),
+            use(person.address),
+            use(person.age); 
+        insert.execute();
+        insert.reset(session);
+
+        person.name = "Lisa Simpson";
+        person.address = "Springfield";
+        person.age = 10;
+        insert << "INSERT INTO Person (name, address, age) VALUES($1, $2, $3)",
+            use(person.name),
+            use(person.address),
+            use(person.age); 
+        insert.execute();
+
+        Statement select(session);
+        select << "SELECT Name, Address, Age FROM Person",
+            into(person.name),
+            into(person.address),
+            into(person.age),
+            range(0, 1); //  iterate over result set one row at a time
+
+        while (!select.done())
+        {
+            select.execute();
+            std::cout << person.name << " " << person.address << " " << person.age << std::endl;
+        }
+Poco::Data::MySQL::Connector::unregisterConnector();
+Poco::Data::SQLite::Connector::unregisterConnector();
+Poco::Data::PostgreSQL::Connector::unregisterConnector();
+
+
+
+// static void commandThreadFunction(); //header
+// void utilFuncs::commandThreadFunction()
+// {
+//     std::cout << "begin utilfuncs::commandThreadFunction: " << getDateTimeLocal() << std::endl;
+//     std::string command;
+
+//     while (std::cin >> command)
+//     {
+//         if (command == "quit")
+//         {
+//             shutdownFlag.store(true);
+//             break;
+//         }
+
+//         std::cin.clear();
+//     }
+
+//     std::cout << "end utilfuncs::commandThreadFunction: " << getDateTimeLocal() << std::endl;
+// }
+//For sqlite
+static int sqlCallback(void *data, int argc, char **argv, char **azColName); //header
+int utilFuncs::sqlCallback(void *data, int argc, char **argv, char **azColName)
+{
+    (void)data;
+    int i;
+    // fprintf(stderr, "%s: ", (const char *)data);
+
+    for (i = 0; i < argc; i++)
+    {
+        printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+    }
+
+    //printf("\n");
+    return 0;
+}
+
  MySql client
  sql::Driver *driver;
         sql::Connection *con;
@@ -188,3 +343,56 @@ class SSLInitializer
           //line.set_value(1);
           //std::this_thread::sleep_for(1000ms);
          // //}
+
+
+
+
+class SpinLock
+{
+    std::atomic_flag flag = ATOMIC_FLAG_INIT;
+
+public:
+    void lock()
+    {
+        // Loop until we successfully set the flag from false → true
+        while (flag.test_and_set(std::memory_order_acquire))
+        {
+            std::atomic_signal_fence(std::memory_order_seq_cst);
+        }
+    }
+
+    void unlock()
+    {
+        flag.clear(std::memory_order_release);
+    }
+};
+
+struct spinlock {
+  std::atomic<bool> lock_ = {0};
+
+  void lock() noexcept {
+    for (;;) {
+      // Optimistically assume the lock is free on the first try
+      if (!lock_.exchange(true, std::memory_order_acquire)) {
+        return;
+      }
+      // Wait for lock to be released without generating cache misses
+      while (lock_.load(std::memory_order_relaxed)) {
+        // Issue X86 PAUSE or ARM YIELD instruction to reduce contention between
+        // hyper-threads
+        __builtin_ia32_pause();
+      }
+    }
+  }
+
+  bool try_lock() noexcept {
+    // First do a relaxed load to check if lock is free in order to prevent
+    // unnecessary cache misses if someone does while(!try_lock())
+    return !lock_.load(std::memory_order_relaxed) &&
+           !lock_.exchange(true, std::memory_order_acquire);
+  }
+
+  void unlock() noexcept {
+    lock_.store(false, std::memory_order_release);
+  }
+};

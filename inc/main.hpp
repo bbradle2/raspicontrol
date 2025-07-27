@@ -6,23 +6,19 @@
 #include <cstdlib>
 #include <filesystem>
 #include <iomanip>
-#include <thread>
-#include <gpiod.hpp>
-
 #include <random>
 #include <stdlib.h>
 #include <stdio.h>
 #include <uuid/uuid.h>
 #include <cstring>
 #include <mutex>
+#include <ostream>
+#include <unistd.h> // For sleep
+#include <condition_variable>
+#include <syncstream>
+#include <future>
 
-#include <mysql_connection.h>
-#include <cppconn/driver.h>
-#include <cppconn/exception.h>
-#include <cppconn/resultset.h>
-#include <cppconn/statement.h>
-
-#include <Poco/Crypto/CipherFactory.h>
+//#include <Poco/Crypto/CipherFactory.h>
 
 #include "Poco/Exception.h"
 #include "Poco/StreamCopier.h"
@@ -69,16 +65,30 @@
 
 #include "Poco/Dynamic/Var.h"
 
+#include "Poco/Data/Session.h"
+#include "Poco/Data/SQLite/Connector.h"
+// #include "Poco/Data/MySQL/Connector.h"
+// #include "Poco/Data/PostgreSQL/Connector.h"
+
+#include <boost/lockfree/queue.hpp>
+#include <boost/exception/all.hpp>
+#include <boost/exception/errinfo_errno.hpp>     // For errno information
+#include <boost/exception/errinfo_file_name.hpp> // For file name information
+
 #include <sqlite3.h>
+#include <gpiod.hpp>
+
+//Project project headers
 #include <defer.hpp>
 #include <utilFuncs.hpp>
 #include <gpioController.hpp>
-#include <boost/lockfree/queue.hpp>
-#include <ostream>
+
+using namespace Poco::Data::Keywords;
+using Poco::Data::Session;
+using Poco::Data::Statement;
 
 using namespace std::literals;
 using namespace std;
-using namespace sql::mysql;
 
 using Poco::DateTime;
 using Poco::DateTimeFormat;

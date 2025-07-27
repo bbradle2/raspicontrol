@@ -1,8 +1,5 @@
 {
     "C_Cpp.vcpkg.enabled": false,
-    "cmake.configureArgs": [
-        "-DCMAKE_TOOLCHAIN_FILE=OFF"
-    ],
     "files.associations": {
         "*.js": "javascriptreact",
         "fcntl.h": "c",
@@ -74,7 +71,8 @@
         "future": "cpp",
         "cfenv": "cpp",
         "typeindex": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "scoped_allocator": "cpp"
     },
-    "cmake.clearOutputBeforeBuild": false
+    "cmake.clearOutputBeforeBuild": true
 }

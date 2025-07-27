@@ -11,10 +11,8 @@ gpioObject::gpioObject(gpiod::chip chip, int gpioNumber, int gpioValue, int dire
 
     if(!_line.is_requested()) 
     {
-        _line.request({"led-toggle",
-                   _direction, 0}, 0);
+        _line.request({"led-toggle", _direction, 0}, 0);
     }
-
 }
 
 gpioObject::~gpioObject()

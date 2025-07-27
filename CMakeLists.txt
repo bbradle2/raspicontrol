@@ -13,21 +13,24 @@ include (CTest)
 #find_package(MySQL REQUIRED)
 #ctest -T memcheck --test-dir build
 
-find_package(SQLite3 REQUIRED)
-find_package(Poco CONFIG REQUIRED Foundation Net Util Crypto NetSSL)
+#find_package(SQLite3 REQUIRED)
 
+find_package(Poco CONFIG REQUIRED Foundation Net Util Crypto NetSSL Data DataSQLite DataMySQL DataPostgreSQL)
+#find_package(SQLite3 REQUIRED)
+#find_package(Poco REQUIRED MySQL::client)
+#include_directories(${Poco_INCLUDE_DIRECTORIES})
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # set(CMAKE_C_COMPILER clang) #CMAKE_CXX_STANDARD has to = 20 to use clang
 # set(CMAKE_CXX_COMPILER clang++)
-add_compile_options(-W -Wall -Werror)
+#add_compile_options(-W -Wall -Werror)
   # For a general case, not recommended, to preserve exiting cache variable
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror")
 
 #include_directories(${MYSQL_INCLUDE_DIR})
-include_directories(${Boost_INCLUDE_DIRS})
+#include_directories(${Boost_INCLUDE_DIRS})
 file(GLOB SOURCES_CPP CONFIGURE_DEPENDS "src/*.cpp")
 file(GLOB SOURCES_C CONFIGURE_DEPENDS "src/*.c")
 set(SOURCES_FILES ${SOURCES_CPP} ${SOURCES_C})
@@ -35,10 +38,9 @@ set(SOURCES_FILES ${SOURCES_CPP} ${SOURCES_C})
 add_executable(${PROJECT_NAME} ${SOURCES_FILES})
 #file(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/example.db")
 
-#add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
+add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
 
-
-add_test(NAME ${PROJECT_NAME}_memchecked
+add_test(NAME ${PROJECT_NAME}_memcheck
     COMMAND valgrind
       --error-exitcode=1
       --tool=memcheck
@@ -67,14 +69,15 @@ add_test(NAME ${PROJECT_NAME}_cachegrind
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/inc)
 
-target_link_libraries(${PROJECT_NAME} LINK_PRIVATE SQLite::SQLite3)
-target_link_libraries(${PROJECT_NAME} LINK_PRIVATE Poco::Net Poco::Foundation Poco::Util Poco::Crypto Poco::NetSSL )
+#target_link_libraries(${PROJECT_NAME} LINK_PRIVATE SQLite::SQLite3)
+
+target_link_libraries(${PROJECT_NAME} LINK_PRIVATE Poco::Net Poco::Foundation Poco::Util Poco::Crypto Poco::NetSSL Poco::Data Poco::DataSQLite Poco::DataMySQL Poco::DataPostgreSQL)
 target_link_libraries(${PROJECT_NAME} LINK_PRIVATE gpiodcxx)
 target_link_libraries(${PROJECT_NAME} LINK_PRIVATE uuid)
 target_link_libraries(${PROJECT_NAME} LINK_PRIVATE crypto++)
-#target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
-target_link_libraries(${PROJECT_NAME} LINK_PRIVATE mysqlcppconn)
-
+target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
+#target_link_libraries(${PROJECT_NAME} LINK_PRIVATE mysqlcppconn)
+#target_link_libraries(${PROJECT_NAME} ${Poco_LIBRARIES})
 #target_link_libraries(${PROJECT_NAME} SQLiteCpp)
 
     # function(print_all_variables)

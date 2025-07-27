@@ -15,25 +15,6 @@ std::string utilFuncs::getDateTimeLocal()
     return asc + " ";
 }
 
-// void utilFuncs::commandThreadFunction()
-// {
-//     std::cout << "begin utilfuncs::commandThreadFunction: " << getDateTimeLocal() << std::endl;
-//     std::string command;
-
-//     while (std::cin >> command)
-//     {
-//         if (command == "quit")
-//         {
-//             shutdownFlag.store(true);
-//             break;
-//         }
-
-//         std::cin.clear();
-//     }
-
-//     std::cout << "end utilfuncs::commandThreadFunction: " << getDateTimeLocal() << std::endl;
-// }
-
 std::string utilFuncs::encrypt(const std::string &input, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv)
 {
     std::string cipher;
@@ -70,17 +51,3 @@ std::string utilFuncs::decrypt(const std::string &cipher_text, const std::vector
     return plain_text;
 }
 
-int utilFuncs::sqlCallback(void *data, int argc, char **argv, char **azColName)
-{
-    (void)data;
-    int i;
-    // fprintf(stderr, "%s: ", (const char *)data);
-
-    for (i = 0; i < argc; i++)
-    {
-        printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
-    }
-
-    //printf("\n");
-    return 0;
-}
