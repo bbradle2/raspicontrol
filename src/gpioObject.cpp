@@ -1,6 +1,5 @@
 #include <gpioObject.hpp>
-#include <gpiod.hpp>
-#include <iostream>
+
 
 gpioObject::gpioObject(gpiod::chip chip, int gpioNumber, int gpioValue, int direction = GPIOD_LINE_REQUEST_DIRECTION_OUTPUT)
 {
@@ -11,7 +10,8 @@ gpioObject::gpioObject(gpiod::chip chip, int gpioNumber, int gpioValue, int dire
 
     if(!_line.is_requested()) 
     {
-        _line.request({"led-toggle", _direction, 0}, 0);
+        _lineName = _line.name();
+        _line.request({_lineName, _direction, 0}, 0);
     }
 }
 

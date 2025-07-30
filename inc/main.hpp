@@ -77,11 +77,13 @@
 
 #include <sqlite3.h>
 #include <gpiod.hpp>
+#include <valgrind/valgrind.h>
 
 //Project project headers
 #include <defer.hpp>
 #include <utilFuncs.hpp>
 #include <gpioController.hpp>
+#include <raspberryPiDefines.hpp>
 
 using namespace Poco::Data::Keywords;
 using Poco::Data::Session;

@@ -1,6 +1,9 @@
 #pragma once
+
 #include <string>
 #include <gpiod.hpp>
+#include <iostream>
+
 
 class gpioObject
 {
@@ -11,6 +14,7 @@ private:
     gpiod::line _line;
     gpiod::chip _chip;
     int _direction;
+    std::string _lineName;
 
 public:
     gpioObject(gpiod::chip chip, int gpioNumber, int gpioValue, int dir);

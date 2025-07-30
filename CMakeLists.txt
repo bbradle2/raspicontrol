@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 4.0.3)
 
 project(raspicontrol VERSION 1.5)
-enable_testing()
+add_compile_definitions(RASP5) # Equivalent to #define MY_DEFINE_VAR
 
+#enable_testing()
+set(CMAKE_CTEST_ARGUMENTS "-V" )
 include (CTest)
 #set(CTEST_MEMORYCHECK_TYPE Valgrind)
 #SET(GCC_COVERAGE_COMPILE_FLAGS "-fprofile-arcs -ftest-coverage")
@@ -38,7 +40,8 @@ set(SOURCES_FILES ${SOURCES_CPP} ${SOURCES_C})
 add_executable(${PROJECT_NAME} ${SOURCES_FILES})
 #file(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/example.db")
 
-add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
+add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME} ssddfs )
+
 
 add_test(NAME ${PROJECT_NAME}_memcheck
     COMMAND valgrind
@@ -49,7 +52,7 @@ add_test(NAME ${PROJECT_NAME}_memcheck
       --show-leak-kinds=definite
       --track-fds=yes
       $<TARGET_FILE:${PROJECT_NAME}>
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} )
 
 add_test(NAME ${PROJECT_NAME}_helgrind
     COMMAND valgrind
