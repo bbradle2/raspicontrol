@@ -19,5 +19,5 @@ private:
 public:
     gpioController();
     ~gpioController();
-    std::map<std::string, gpioObject*> getGpioObjects();
+    std::map<std::string, gpioObject*> getGpios();
 };

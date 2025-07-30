@@ -17,6 +17,7 @@
 #include <condition_variable>
 #include <syncstream>
 #include <future>
+#include <exception>
 
 //#include <Poco/Crypto/CipherFactory.h>
 
@@ -74,6 +75,7 @@
 #include <boost/exception/all.hpp>
 #include <boost/exception/errinfo_errno.hpp>     // For errno information
 #include <boost/exception/errinfo_file_name.hpp> // For file name information
+#include <boost/algorithm/string.hpp>
 
 #include <sqlite3.h>
 #include <gpiod.hpp>

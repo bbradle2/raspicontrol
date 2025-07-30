@@ -14,16 +14,16 @@ int main(int argc, char **argv)
         {
             std::cout << "argv[" << i << "]:" << argv[i] << std::endl;
         }
+        
         std::cout << std::endl;
 
         gpioController gpioCtl;
 
-        gpioCtl.getGpioObjects()[RaspberryPiDefines::GPIO23]->setGpioValue(1);
-        gpioCtl.getGpioObjects()[RaspberryPiDefines::GPIO24]->setGpioValue(1);
+        gpioCtl.getGpios()[RaspberryPiDefines::GPIO23]->setGpioValue(1);
+        gpioCtl.getGpios()[RaspberryPiDefines::GPIO24]->setGpioValue(1);
         std::this_thread::sleep_for(1000ms);
-        gpioCtl.getGpioObjects()[RaspberryPiDefines::GPIO23]->setGpioValue(0);
-        gpioCtl.getGpioObjects()[RaspberryPiDefines::GPIO24]->setGpioValue(0);
-
+        gpioCtl.getGpios()[RaspberryPiDefines::GPIO23]->setGpioValue(0);
+        gpioCtl.getGpios()[RaspberryPiDefines::GPIO24]->setGpioValue(0);
     }
     catch (const Poco::Exception &e)
     {
@@ -38,7 +38,6 @@ int main(int argc, char **argv)
         std::cerr << "Error: " << e.what() << " " << utilFuncs::getDateTimeLocal() << std::endl;
     }
 
-    std::cout << std::endl;
     std::cout << "Program Stopped: " << utilFuncs::getDateTimeLocal() << std::endl;
     return 0;
 }

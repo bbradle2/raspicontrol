@@ -1,6 +1,5 @@
 #include <gpioObject.hpp>
 
-
 gpioObject::gpioObject(gpiod::chip chip, int gpioNumber, int gpioValue, int direction = GPIOD_LINE_REQUEST_DIRECTION_OUTPUT)
 {
     _gpioNumber = gpioNumber;

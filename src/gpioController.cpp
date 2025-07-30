@@ -24,7 +24,7 @@ gpioController::~gpioController()
     _gpios.clear();
 }
 
-std::map<std::string, gpioObject *> gpioController::getGpioObjects()
+std::map<std::string, gpioObject *> gpioController::getGpios()
 {
     if (_gpios.size() < 1)
         throw "No GPIO(s) Found.";

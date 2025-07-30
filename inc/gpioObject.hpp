@@ -4,7 +4,6 @@
 #include <gpiod.hpp>
 #include <iostream>
 
-
 class gpioObject
 {
 
@@ -23,4 +22,8 @@ public:
     void setGpioValue(int gpioValue);
     void setGpioDirection(int direction);
     int getGpioDirection();
+    std::string getGpioName() 
+    { 
+        return _lineName; 
+    }
 };

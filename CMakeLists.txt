@@ -40,7 +40,7 @@ set(SOURCES_FILES ${SOURCES_CPP} ${SOURCES_C})
 add_executable(${PROJECT_NAME} ${SOURCES_FILES})
 #file(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/example.db")
 
-add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME} ssddfs )
+add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME} testarg )
 
 
 add_test(NAME ${PROJECT_NAME}_memcheck
