@@ -12,18 +12,14 @@ int main(int argc, char **argv)
         std::cout << "argc: " << argc << std::endl;
         for (int i = 0; i < argc; i++)
         {
-            std::cout << "argv[" << i << "]:" << argv[i] << std::endl;
+            std::cout << "argv[" << i << "]: " << argv[i] << std::endl;
         }
-        
-        std::cout << std::endl;
-
+       
         gpioController gpioCtl;
-
-        gpioCtl.getGpios()[RaspberryPiDefines::GPIO23]->setGpioValue(1);
-        gpioCtl.getGpios()[RaspberryPiDefines::GPIO24]->setGpioValue(1);
+        gpioCtl.getGpios()[GPIO23]->setGpioValue(1);
         std::this_thread::sleep_for(1000ms);
-        gpioCtl.getGpios()[RaspberryPiDefines::GPIO23]->setGpioValue(0);
-        gpioCtl.getGpios()[RaspberryPiDefines::GPIO24]->setGpioValue(0);
+        gpioCtl.getGpios()[GPIO23]->setGpioValue(0);
+
     }
     catch (const Poco::Exception &e)
     {

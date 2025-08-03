@@ -18,6 +18,11 @@
 #include <syncstream>
 #include <future>
 #include <exception>
+#include <system_error> // for std::error_code
+#include <cstdio>       // for std::printf
+#include <cassert>
+#include <algorithm>
+#include <fstream>
 
 //#include <Poco/Crypto/CipherFactory.h>
 
@@ -85,6 +90,7 @@
 #include <defer.hpp>
 #include <utilFuncs.hpp>
 #include <gpioController.hpp>
+#include <mio.hpp>
 #include <raspberryPiDefines.hpp>
 
 using namespace Poco::Data::Keywords;
@@ -99,3 +105,4 @@ using Poco::DateTimeFormat;
 using Poco::DateTimeFormatter;
 using Poco::DateTimeParser;
 using Poco::LocalDateTime;
+using namespace RaspberryPiDefines;
