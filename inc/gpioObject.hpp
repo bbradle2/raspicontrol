@@ -2,7 +2,6 @@
 
 #include <string>
 #include <gpiod.hpp>
-#include <iostream>
 
 class gpioObject
 {
@@ -16,14 +15,11 @@ private:
     std::string _lineName;
 
 public:
-    gpioObject(gpiod::chip chip, int gpioNumber, int gpioValue, int dir);
+    gpioObject(gpiod::chip chip, int gpioNumber, int dir);
     ~gpioObject();
     int getGpioValue();
-    void setGpioValue(int gpioValue);
+    int setGpioValue(int gpioValue);
     void setGpioDirection(int direction);
     int getGpioDirection();
-    std::string getGpioName() 
-    { 
-        return _lineName; 
-    }
+    std::string getGpioLineName();
 };

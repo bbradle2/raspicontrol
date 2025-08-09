@@ -1,9 +1,9 @@
 #include <gpioObject.hpp>
 
-gpioObject::gpioObject(gpiod::chip chip, int gpioNumber, int gpioValue, int direction = GPIOD_LINE_REQUEST_DIRECTION_OUTPUT)
+gpioObject::gpioObject(gpiod::chip chip, int gpioNumber, int direction = GPIOD_LINE_REQUEST_DIRECTION_OUTPUT)
 {
     _gpioNumber = gpioNumber;
-    _gpioValue = gpioValue;
+          
     _line = chip.get_line(_gpioNumber);
     _direction = direction;
 
@@ -25,17 +25,22 @@ int gpioObject::getGpioValue()
     return _gpioValue;
 }
 
-void gpioObject::setGpioValue(int gpioValue)
+int gpioObject::setGpioValue(int gpioValue)
 {
-    if(_line.direction() == gpiod::line::DIRECTION_OUTPUT) 
+    if (gpioValue < 0 || gpioValue > 1)
+        throw std::invalid_argument("gpioValue must be a 1 or a 0.");
+
+    if (_line.direction() == gpiod::line::DIRECTION_OUTPUT)
     {
         _gpioValue = gpioValue;
         _line.set_value(_gpioValue);
-    } 
-    else 
+    }
+    else
     {
         _gpioValue = _line.get_value();
     }
+
+    return _gpioValue;
 }
 
 void gpioObject::setGpioDirection(int direction)
@@ -46,4 +51,9 @@ void gpioObject::setGpioDirection(int direction)
 int gpioObject::getGpioDirection()
 {
     return _direction;
+}
+
+std::string gpioObject::getGpioLineName()
+{
+    return _lineName;
 }

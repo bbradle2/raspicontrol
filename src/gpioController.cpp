@@ -6,8 +6,8 @@ gpioController::gpioController()
 {
     _chip.open(RaspberryPiDefines::CHIP_NAME);
 
-    _gpios.emplace(RaspberryPiDefines::GPIO23, new gpioObject{_chip, RaspberryPiDefines::PIN23, 0, GPIOD_LINE_REQUEST_DIRECTION_OUTPUT});
-    _gpios.emplace(RaspberryPiDefines::GPIO24, new gpioObject{_chip, RaspberryPiDefines::PIN24, 0, GPIOD_LINE_REQUEST_DIRECTION_OUTPUT});
+    _gpios.emplace(RaspberryPiDefines::GPIO23, new gpioObject{_chip, RaspberryPiDefines::PIN23, GPIOD_LINE_REQUEST_DIRECTION_OUTPUT});
+    _gpios.emplace(RaspberryPiDefines::GPIO24, new gpioObject{_chip, RaspberryPiDefines::PIN24, GPIOD_LINE_REQUEST_DIRECTION_OUTPUT});
 }
 
 gpioController::~gpioController()
@@ -27,7 +27,7 @@ gpioController::~gpioController()
 std::map<std::string, gpioObject *> gpioController::getGpios()
 {
     if (_gpios.size() < 1)
-        throw "No GPIO(s) Found.";
+        throw std::length_error("No Gpios allocated.");
 
     return _gpios;
 }
