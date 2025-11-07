@@ -515,3 +515,9 @@ void allocate_file(const std::string &path, const int size)
     std::string s(size, '0');
     file << s;
 }
+
+
+        //gpioController gpioCtl;
+        // std::cout << "Gpio 23 Value:" << gpioCtl.getGpios()[GPIO23]->setGpioValue(1) << std::endl;
+        // std::this_thread::sleep_for(1000ms); // delay for 1000 milliseconds.
+        // std::cout << "Gpio 23 Value:" << gpioCtl.getGpios()[GPIO23]->setGpioValue(0) << std::endl;

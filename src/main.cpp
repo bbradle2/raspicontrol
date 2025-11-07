@@ -1,4 +1,5 @@
 #include <main.hpp>
+#include <gpiod.hpp>
 
 int main(int argc, char **argv)
 {

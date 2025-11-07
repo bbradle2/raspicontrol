@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 4.1.0)
 
 project(raspicontrol VERSION 1.5)
-add_compile_definitions(RASP5) # Equivalent to #define MY_DEFINE_VAR
+add_compile_definitions(RASP5) # Equivalent to #define RASP5
 
 #enable_testing()
 set(CMAKE_CTEST_ARGUMENTS "-V" )
