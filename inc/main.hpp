@@ -23,6 +23,7 @@
 #include <cassert>
 #include <algorithm>
 #include <fstream>
+#include <future>
 
 //#include <Poco/Crypto/CipherFactory.h>
 
