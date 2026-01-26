@@ -26,7 +26,7 @@
 #include <future>
 #include <httplib.h>
 
-#include <glib.h>
+//#include <glib.h>
 
 //#include <Poco/Crypto/CipherFactory.h>
 
