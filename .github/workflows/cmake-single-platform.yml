@@ -30,7 +30,7 @@ jobs:
       run: cmake --version
 
     - name: Configure
-      run: cmake .. -G Ninja 
+      run: cmake -G Ninja 
       
     - name: Build
       # Build your program with the given configuration
