@@ -17,10 +17,10 @@ include (CTest)
 #ctest -T memcheck --test-dir build
 
 #find_package(SQLite3 REQUIRED)
-find_package(PkgConfig REQUIRED)
+#find_package(PkgConfig REQUIRED)
 find_package(Poco CONFIG REQUIRED Foundation Net Util Crypto NetSSL Data DataSQLite DataMySQL DataPostgreSQL)
 
-pkg_search_module(GLIB REQUIRED glib-2.0)
+#pkg_search_module(GLIB REQUIRED glib-2.0)
 #find_package(SQLite3 REQUIRED)
 #find_package(Poco REQUIRED MySQL::client)
 #include_directories(${Poco_INCLUDE_DIRECTORIES})
@@ -78,7 +78,7 @@ add_test(NAME ${PROJECT_NAME}_cachegrind
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/inc)
-target_include_directories(${PROJECT_NAME} PRIVATE ${GLIB_INCLUDE_DIRS})
+#target_include_directories(${PROJECT_NAME} PRIVATE ${GLIB_INCLUDE_DIRS})
 #target_include_directories(${PROJECT_NAME} PRIVATE  /usr/lib/gcc/aarch64-linux-gnu/12/include)
 #target_include_directories(${PROJECT_NAME} PRIVATE  /usr/include/GNUstep)
 
@@ -89,7 +89,7 @@ target_link_libraries(${PROJECT_NAME} LINK_PRIVATE gpiodcxx)
 target_link_libraries(${PROJECT_NAME} LINK_PRIVATE uuid)
 target_link_libraries(${PROJECT_NAME} LINK_PRIVATE crypto++)
 target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
-target_link_libraries(${PROJECT_NAME} PRIVATE ${GLIB_LIBRARIES})
+#target_link_libraries(${PROJECT_NAME} PRIVATE ${GLIB_LIBRARIES})
 #target_link_libraries(${PROJECT_NAME} PRIVATE gnustep-base objc)
 
 # set(CPACK_PROJECT_NAME ${PROJECT_NAME})
