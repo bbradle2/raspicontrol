@@ -29,6 +29,9 @@ jobs:
     - name: Verify CMake version
       run: cmake --version
 
+    - name: Configure
+      run: cmake .. -G Ninja 
+      
     - name: Build
       # Build your program with the given configuration
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
