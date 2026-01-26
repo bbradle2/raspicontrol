@@ -24,6 +24,9 @@
 #include <algorithm>
 #include <fstream>
 #include <future>
+#include <httplib.h>
+
+#include <glib.h>
 
 //#include <Poco/Crypto/CipherFactory.h>
 

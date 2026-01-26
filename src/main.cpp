@@ -1,8 +1,4 @@
 #include <main.hpp>
-#include <gpiod.hpp>
-#include <httplib.h>
-#include <glib.h>
-
 
 int main(int argc, char **argv)
 {
@@ -26,7 +22,7 @@ int main(int argc, char **argv)
     {
         std::cerr << "Error: " << e.displayText() << " " << utilFuncs::getDateTimeLocal() << std::endl;
     }
-    catch (boost::exception &e)
+    catch (const boost::exception &e)
     {
         std::cerr << "Error: " << boost::diagnostic_information(e) << utilFuncs::getDateTimeLocal() << std::endl;
     }
