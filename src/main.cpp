@@ -4,33 +4,36 @@ int main(int argc, char **argv)
 {
     try
     {
-        std::cout << "Build Date: " << __DATE__ << std::endl;
-        std::cout << "Build Time: " << __TIME__ << std::endl;
-        std::cout << std::endl;
+        std::cout << "Build Date: " << __DATE__ << ENDLINE;
+        std::cout << "Build Time: " << __TIME__ << ENDLINE;
+        std::cout << ENDLINE;
+      
+        std::cout << "Program Started: " << myUtilFuncs::getDateTimeLocal() << ENDLINE;
 
-        std::cout << "Program Started: " << utilFuncs::getDateTimeLocal() << std::endl;
-
-        std::cout << "argc: " << argc << std::endl;
+        std::cout << "argc: " << argc << ENDLINE;
         for (int i = 0; i < argc; i++)
         {
-            std::cout << "argv[" << i << "]: " << argv[i] << std::endl;
+            std::cout << "argv[" << i << "]: " << argv[i] << ENDLINE;
         }
-        std::cout << std::endl;
 
+        std::string s = read_file("/home/bbrad/projects/cprojects/raspicontrol/build/compile_commands.json");
+        std::cout << s << ENDLINE;
+        std::cout  << ENDLINE;
     }
     catch (const Poco::Exception &e)
     {
-        std::cerr << "Error: " << e.displayText() << " " << utilFuncs::getDateTimeLocal() << std::endl;
+        std::cerr << "Error: " << e.displayText() << " " << myUtilFuncs::getDateTimeLocal() << ENDLINE;
     }
     catch (const boost::exception &e)
     {
-        std::cerr << "Error: " << boost::diagnostic_information(e) << utilFuncs::getDateTimeLocal() << std::endl;
+        std::cerr << "Error: " << boost::diagnostic_information(e) << myUtilFuncs::getDateTimeLocal() << ENDLINE;
     }
     catch (const std::exception &e)
     {
-        std::cerr << "Error: " << e.what() << " " << utilFuncs::getDateTimeLocal() << std::endl;
+        std::cerr << "Error: " << e.what() << " " << myUtilFuncs::getDateTimeLocal() << ENDLINE;
     }
 
-    std::cout << "Program Stopped: " << utilFuncs::getDateTimeLocal() << std::endl;
+    std::cout << "Program Stopped: " << myUtilFuncs::getDateTimeLocal() << ENDLINE;
+
     return 0;
 }

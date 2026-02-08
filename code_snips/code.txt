@@ -554,3 +554,523 @@ int find_the_answer()
         int answer = future.get(); // Blocks until the result is ready
 
         std::cout << "The answer is: " << answer << std::endl;
+
+
+
+        #include <main.hpp>
+
+
+
+#define PROMPT "sql>"
+
+class PageRequestHandler : public HTTPRequestHandler
+/// Return a HTML document with some JavaScript creating
+/// a WebSocket connection.
+{
+public:
+    void handleRequest(HTTPServerRequest &request, HTTPServerResponse &response)
+    {
+        response.setChunkedTransferEncoding(true);
+        response.sendFile("WebNotifier.html", "text/html");
+    }
+};
+
+/////////////////
+//  WebSocket  //
+/////////////////
+
+class WebSocketRequestHandler : public HTTPRequestHandler
+/// Handler for the WebSocket connection.
+{
+public:
+    WebSocketRequestHandler() : _pWS(nullptr), _flags(0)
+    {
+    }
+
+    ~WebSocketRequestHandler()
+    {
+        shutdown();
+    }
+
+    void shutdown()
+    {
+        if (_pWS)
+        {
+            _pWS->shutdown();
+            delete _pWS;
+        }
+    }
+
+    void send(const std::string &buffer)
+    /// Pushes data to web client.
+    {
+        std::cout << "Sending data: " << buffer << std::endl;
+        _pWS->sendFrame(buffer.data(), (int)buffer.size(), _flags);
+    }
+
+    void handleRequest(HTTPServerRequest &request, HTTPServerResponse &response)
+    /// Creates WebSocket and accepts the connection request from web client.
+    {
+        try
+        {
+            if (!_pWS)
+            {
+                _pWS = new WebSocket(request, response);
+                Timespan ts(600, 0);
+                _pWS->setReceiveTimeout(ts);
+                _pWS->setSendTimeout(ts);
+            }
+            std::cout << std::endl
+                      << "WebSocket connection established." << std::endl
+                      << PROMPT;
+
+            char buffer[1024];
+            int n;
+            do
+            {
+                n = _pWS->receiveFrame(buffer, sizeof(buffer), _flags);
+            } while (n > 0 || (_flags & WebSocket::FRAME_OP_BITMASK) != WebSocket::FRAME_OP_CLOSE);
+            std::cout << "WebSocket connection closed." << std::endl;
+        }
+        catch (WebSocketException &exc)
+        {
+            std::cout << exc.displayText() << std::endl;
+            switch (exc.code())
+            {
+            case WebSocket::WS_ERR_HANDSHAKE_UNSUPPORTED_VERSION:
+                response.set("Sec-WebSocket-Version", WebSocket::WEBSOCKET_VERSION);
+                // fallthrough
+            case WebSocket::WS_ERR_NO_HANDSHAKE:
+            case WebSocket::WS_ERR_HANDSHAKE_NO_VERSION:
+            case WebSocket::WS_ERR_HANDSHAKE_NO_KEY:
+                response.setStatusAndReason(HTTPResponse::HTTP_BAD_REQUEST);
+                response.setContentLength(0);
+                response.send();
+                break;
+            }
+        }
+    }
+
+public:
+    WebSocket *_pWS;
+    int _flags;
+};
+
+class RequestHandlerFactory : public HTTPRequestHandlerFactory
+/// Web request handler factory.
+{
+public:
+    RequestHandlerFactory() : _pHandler(nullptr)
+    {
+        
+    }
+
+    HTTPRequestHandler *createRequestHandler(const HTTPServerRequest &request)
+    {
+        std::string uri = request.getURI();
+        if (uri == "/")
+        {
+            return new PageRequestHandler;
+        }
+        else if (uri == "/ws")
+        {
+            if (!_pHandler)
+                _pHandler = new WebSocketRequestHandler;
+            return _pHandler;
+        }
+
+        if (uri != "/favicon.ico")
+            std::cout << "Unknown URI: " << uri << std::endl;
+
+        return nullptr;
+    }
+
+    WebSocketRequestHandler &handler()
+    {
+        if (!_pHandler)
+            throw NullPointerException("WebSocket not connected.");
+        return *_pHandler;
+    }
+
+private:
+    WebSocketRequestHandler *_pHandler;
+};
+
+////////////////
+//  Database  //
+////////////////
+
+class CSVFormatter : public RowFormatter
+/// Formatter, passed to DB statement.
+{
+public:
+    std::string &formatValues(const ValueVec &vals, std::string &formattedValues)
+    /// Formats the result into comma separated list of values.
+    {
+        std::ostringstream str;
+
+        ValueVec::const_iterator it = vals.begin();
+        ValueVec::const_iterator end = vals.end();
+        for (; it != end;)
+        {
+            str << it->convert<std::string>();
+            if (++it != end)
+                str << ',';
+            else
+                break;
+        }
+
+        return formattedValues = str.str();
+    }
+};
+
+class DBEventHandler
+/// Handler for DB insert/update events.
+{
+public:
+    DBEventHandler(RequestHandlerFactory &factory) : _session("SQLite", "sample.db"),
+                                                     _factory(factory),
+                                                     _notifier(_session)
+    /// Constructor; opens/initializes the database and associates
+    /// notification events with their respective handlers.
+    {
+        initDB();
+        _notifier.insert += delegate(this, &DBEventHandler::onInsert);
+        _notifier.update += delegate(this, &DBEventHandler::onUpdate);
+    }
+
+    ~DBEventHandler()
+    /// Destructor; unregisters the notification events.
+    {
+        _notifier.insert -= delegate(this, &DBEventHandler::onInsert);
+        _notifier.update -= delegate(this, &DBEventHandler::onUpdate);
+    }
+
+    std::size_t execute(const std::string &sql)
+    /// Exectutes the SQL statement.
+    {
+        Statement stmt = (_session << sql);
+        return stmt.execute();
+    }
+
+    Poco::Data::Session &session()
+    {
+        return _session;
+    }
+
+private:
+    void initDB()
+    {
+        _session << "DROP TABLE IF EXISTS Person", now;
+        _session << "CREATE TABLE Person (Name VARCHAR(30), Address VARCHAR, Age INTEGER(3))", now;
+    }
+
+    Notifier *notifier(const void *pSender)
+    {
+        return reinterpret_cast<Notifier *>(const_cast<void *>(pSender));
+    }
+
+    void notify(Poco::Int64 rowID)
+    /// Executes the query and sends the data to the web client.
+    {
+        std::ostringstream os;
+        CSVFormatter cf;
+        Statement stmt = (_session << "SELECT rowid, Name, Address, Age FROM Person WHERE rowid = ?", use(rowID), format(cf), now);
+        os << RecordSet(stmt);
+        _factory.handler().send(os.str());
+    }
+
+    void onInsert(const void *pSender)
+    /// Insert event handler; retrieves the data for the affected row
+    /// and calls notify.
+    {
+        Notifier *pN = notifier(pSender);
+        Poco::Int64 rowID = pN->getRow();
+        std::cout << "Inserted row " << rowID << std::endl;
+        notify(rowID);
+    }
+
+    void onUpdate(const void *pSender)
+    /// Update event handler; retrieves the data for the affected row
+    /// and calls notify.
+    {
+        Notifier *pN = notifier(pSender);
+        Poco::Int64 rowID = pN->getRow();
+        std::cout << "Updated row " << rowID << std::endl;
+        notify(rowID);
+    }
+
+    Poco::Data::Session _session;
+    RequestHandlerFactory &_factory;
+    Notifier _notifier;
+};
+
+void doHelp()
+/// Displays help.
+{
+    std::cout << "Poco Data/Net example - HTML Page notifications from DB events" << std::endl;
+    std::cout << "" << std::endl;
+    std::cout << "To observe the functionality, take following steps:" << std::endl;
+    std::cout << "" << std::endl;
+    std::cout << "1) Run a web browser and connect to http://localhost:9980 ." << std::endl;
+    std::cout << "2) Wait until \"WebSocket connection established.\" is displayed." << std::endl;
+    std::cout << "3) Issue SQL commands to see the web page updated, e.g.:" << std::endl;
+    std::cout << "\tINSERT INTO Person VALUES('Homer Simpson', 'Springfield', 42);" << std::endl;
+    std::cout << "\tINSERT INTO Person VALUES('bart Simpson', 'Springfield', 12);" << std::endl;
+    std::cout << "\tUPDATE Person SET Age=38 WHERE Name='Homer Simpson';" << std::endl;
+    std::cout << "\tUPDATE Person SET Name='Bart Simpson' WHERE Name='bart Simpson';" << std::endl;
+    std::cout << "" << std::endl;
+    std::cout << "To end the program, enter \"exit\"." << std::endl;
+    std::cout << "" << std::endl;
+    std::cout << "To view this help, enter \"help\" or \"?\"." << std::endl;
+}
+
+void doShell(DBEventHandler &dbEventHandler)
+/// Displays the shell and dispatches commands.
+{
+    doHelp();
+
+    while (true)
+    {
+        std::cout << PROMPT;
+        char cmd[512] = {0};
+        std::cin.getline(cmd, 512);
+        if (strncmp(cmd, "exit", 4) == 0)
+            break;
+        try
+        {
+            if ((strncmp(cmd, "help", 4) == 0) || cmd[0] == '?')
+                doHelp();
+            if (strlen(cmd) > 0)
+            {
+                std::size_t rows = dbEventHandler.execute(cmd);
+                std::cout << rows << " row" << ((rows != 1) ? "s" : "") << " affected." << std::endl;
+            }
+        }
+        catch (Exception &ex)
+        {
+            std::cout << ex.displayText() << std::endl;
+        }
+    }
+}
+
+///////////
+//  Main //
+///////////
+struct Person
+{
+    std::string name;
+    std::string address;
+    int age;
+};
+
+int main(int argc, char **argv)
+{
+   
+    try
+    {
+        
+        std::cout << "Build Date: " << __DATE__ << "\n";
+        std::cout << "Build Time: " << __TIME__ << "\n";
+        std::cout << "\n";
+
+        std::cout << "Program Started: " << utilFuncs::getDateTimeLocal() << "\n";
+        
+
+        std::cout << "argc: " << argc << "\n";
+        for (int i = 0; i < argc; i++)
+        {
+            std::cout << "argv[" << i << "]: " << argv[i] << "\n";
+        }
+        std::cout << "\n";
+        Poco::Data::SQLite::Connector::registerConnector();
+
+        // HTTPServer instance
+        RequestHandlerFactory *pFactory = new RequestHandlerFactory;
+        SocketAddress sockAddr(IPAddress(), 9980);
+        ServerSocket svs(sockAddr);
+        HTTPServer srv(pFactory, svs, new HTTPServerParams);
+
+        // DB stuff
+        DBEventHandler dbEventHandler(*pFactory);
+
+        // Start the HTTPServer
+        srv.start();
+
+        // Run shell
+        doShell(dbEventHandler);
+
+        // Stop the HTTPServer
+        srv.stop();
+
+    }
+    catch (const Poco::Exception &e)
+    {
+        std::cerr << "Error: " << e.displayText() << " " << utilFuncs::getDateTimeLocal() << "\n";
+    }
+    catch (const boost::exception &e)
+    {
+        std::cerr << "Error: " << boost::diagnostic_information(e) << utilFuncs::getDateTimeLocal() << "\n";
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << "Error: " << e.what() << " " << utilFuncs::getDateTimeLocal() << "\n";
+    }
+
+    std::cout << "Program Stopped: " << utilFuncs::getDateTimeLocal() << "\n";
+
+   
+    return 0;
+}
+
+
+
+#include <main.hpp>
+#include "file.hpp"
+// This file must be manually included when
+// using basic_parser to implement a parser.
+namespace json = boost::json;
+
+json::value
+parse_file(char const *filename)
+{
+    file f(filename, "r");
+    json::stream_parser p;
+    boost::system::error_code ec;
+    do
+    {
+        char buf[4096];
+        auto const nread = f.read(buf, sizeof(buf));
+        p.write(buf, nread, ec);
+    } while (!f.eof());
+    if (ec)
+        return nullptr;
+    p.finish(ec);
+    if (ec)
+        return nullptr;
+    return p.release();
+}
+
+void pretty_print(std::ostream &os, json::value const &jv, std::string *indent = nullptr)
+{
+    std::string indent_;
+    if (!indent)
+        indent = &indent_;
+    switch (jv.kind())
+    {
+    case json::kind::object:
+    {
+        os << "{\n";
+        indent->append(4, ' ');
+        auto const &obj = jv.get_object();
+        if (!obj.empty())
+        {
+            auto it = obj.begin();
+            for (;;)
+            {
+                os << *indent << json::serialize(it->key()) << " : ";
+                pretty_print(os, it->value(), indent);
+                if (++it == obj.end())
+                    break;
+                os << ",\n";
+            }
+        }
+        os << "\n";
+        indent->resize(indent->size() - 4);
+        os << *indent << "}";
+        break;
+    }
+
+    case json::kind::array:
+    {
+        os << "[\n";
+        indent->append(4, ' ');
+        auto const &arr = jv.get_array();
+        if (!arr.empty())
+        {
+            auto it = arr.begin();
+            for (;;)
+            {
+                os << *indent;
+                pretty_print(os, *it, indent);
+                if (++it == arr.end())
+                    break;
+                os << ",\n";
+            }
+        }
+        os << "\n";
+        indent->resize(indent->size() - 4);
+        os << *indent << "]";
+        break;
+    }
+
+    case json::kind::string:
+    {
+        os << json::serialize(jv.get_string());
+        break;
+    }
+
+    case json::kind::uint64:
+    case json::kind::int64:
+    case json::kind::double_:
+        os << jv;
+        break;
+
+    case json::kind::bool_:
+        if (jv.get_bool())
+            os << "true";
+        else
+            os << "false";
+        break;
+
+    case json::kind::null:
+        os << "null";
+        break;
+    }
+
+    if (indent->empty())
+        os << "\n";
+}
+
+int main(int argc, char **argv)
+{
+    try
+    {
+        
+        std::cout << "Build Date: " << __DATE__ << ENDLINE;
+        std::cout << "Build Time: " << __TIME__ << ENDLINE;
+        std::cout << ENDLINE;
+      
+        std::cout << "Program Started: " << myUtilFuncs::getDateTimeLocal() << ENDLINE;
+
+        std::cout << "argc: " << argc << ENDLINE;
+        for (int i = 0; i < argc; i++)
+        {
+            std::cout << "argv[" << i << "]: " << argv[i] << ENDLINE;
+        }
+
+        std::cout << ENDLINE;
+
+
+        std::filesystem::path temp = std::filesystem::temp_directory_path();
+        string filePath = temp.string() + "/" + "gggg.json";
+        auto const jv = parse_file(filePath.c_str());
+        pretty_print(std::cout, jv);
+    }
+    catch (const Poco::Exception &e)
+    {
+        std::cerr << "Error: " << e.displayText() << " " << myUtilFuncs::getDateTimeLocal() << ENDLINE;
+    }
+    catch (const boost::exception &e)
+    {
+        std::cerr << "Error: " << boost::diagnostic_information(e) << myUtilFuncs::getDateTimeLocal() << ENDLINE;
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << "Error: " << e.what() << " " << myUtilFuncs::getDateTimeLocal() << ENDLINE;
+    }
+
+    std::cout << "Program Stopped: " << myUtilFuncs::getDateTimeLocal() << ENDLINE;
+
+    return 0;
+}
