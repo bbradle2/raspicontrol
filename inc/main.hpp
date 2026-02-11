@@ -84,7 +84,7 @@
 #include "Poco/Data/SQLite/Connector.h"
 #include "Poco/Data/SQLite/Notifier.h"
 //#include "Poco/Data/MySQL/Connector.h"
-//#include "Poco/Data/PostgreSQL/Connector.h"
+#include "Poco/Data/PostgreSQL/Connector.h"
 #include "Poco/Net/NetException.h"
 #include "Poco/Util/ServerApplication.h"
 
@@ -95,6 +95,11 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/timer/timer.hpp>
 #include <boost/json/src.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/system/error_code.hpp>
+#include <boost/system.hpp>
+#include <boost/asio.hpp>
+#include <boost/version.hpp>
 
 #include <sqlite3.h>
 #include <gpiod.hpp>

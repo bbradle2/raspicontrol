@@ -19,8 +19,11 @@ include (CTest)
 #find_package(SQLite3 REQUIRED)
 find_package(PkgConfig REQUIRED)
 find_package(Poco CONFIG REQUIRED Foundation Net Util Crypto NetSSL Data DataSQLite DataMySQL DataPostgreSQL)
+find_package(Boost REQUIRED COMPONENTS thread)
 find_package(Boost REQUIRED COMPONENTS timer)
-#find_package(Boost REQUIRED COMPONENTS json)
+find_package(Boost REQUIRED COMPONENTS json)
+find_package(Boost REQUIRED COMPONENTS url)
+find_package(Boost REQUIRED COMPONENTS filesystem)
 
 
 pkg_search_module(GLIB REQUIRED glib-2.0)
@@ -91,8 +94,14 @@ target_link_libraries(${PROJECT_NAME} LINK_PRIVATE Poco::Net Poco::Foundation Po
 target_link_libraries(${PROJECT_NAME} LINK_PRIVATE gpiodcxx)
 target_link_libraries(${PROJECT_NAME} LINK_PRIVATE uuid)
 target_link_libraries(${PROJECT_NAME} LINK_PRIVATE crypto++)
+target_link_libraries(${PROJECT_NAME} PUBLIC Boost::thread)
 target_link_libraries(${PROJECT_NAME} PUBLIC Boost::timer)
-#target_link_libraries(${PROJECT_NAME} PUBLIC Boost::json)
+target_link_libraries(${PROJECT_NAME} PUBLIC Boost::json)
+target_link_libraries(${PROJECT_NAME} PUBLIC Boost::url)
+target_link_libraries(${PROJECT_NAME} PUBLIC Boost::filesystem)
+
+
+
 
 #target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${GLIB_LIBRARIES})
@@ -120,5 +129,5 @@ target_link_libraries(${PROJECT_NAME} PRIVATE ${GLIB_LIBRARIES})
     file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/WebNotifier.html
      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
-    file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/gggg.json
-     DESTINATION /tmp)
+    # file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/gggg.json
+    #  DESTINATION /tmp)

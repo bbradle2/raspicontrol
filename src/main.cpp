@@ -16,9 +16,8 @@ int main(int argc, char **argv)
             std::cout << "argv[" << i << "]: " << argv[i] << ENDLINE;
         }
 
-        std::string s = read_file("/home/bbrad/projects/cprojects/raspicontrol/build/compile_commands.json");
-        std::cout << s << ENDLINE;
         std::cout  << ENDLINE;
+
     }
     catch (const Poco::Exception &e)
     {

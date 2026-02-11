@@ -1074,3 +1074,58 @@ int main(int argc, char **argv)
 
     return 0;
 }
+
+
+using boost::asio::ip::tcp;
+
+int main(int argc, char **argv)
+{
+    try
+    {
+        std::cout << "Build Date: " << __DATE__ << ENDLINE;
+        std::cout << "Build Time: " << __TIME__ << ENDLINE;
+        std::cout << ENDLINE;
+      
+        std::cout << "Program Started: " << myUtilFuncs::getDateTimeLocal() << ENDLINE;
+
+        std::cout << "argc: " << argc << ENDLINE;
+        for (int i = 0; i < argc; i++)
+        {
+            std::cout << "argv[" << i << "]: " << argv[i] << ENDLINE;
+        }
+        boost::asio::io_context io_context;
+
+        tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), 13));
+
+        for (;;)
+        {
+            tcp::socket socket(io_context);
+            acceptor.accept(socket);
+            std::cout << "Client Connected: " << myUtilFuncs::getDateTimeLocal() << ENDLINE;
+
+            std::string message = myUtilFuncs::getDateTimeLocal();
+
+            boost::system::error_code ignored_error;
+            boost::asio::write(socket, boost::asio::buffer(message), ignored_error);
+
+        }
+
+        std::cout  << ENDLINE;
+    }
+    catch (const Poco::Exception &e)
+    {
+        std::cerr << "Error: " << e.displayText() << " " << myUtilFuncs::getDateTimeLocal() << ENDLINE;
+    }
+    catch (const boost::exception &e)
+    {
+        std::cerr << "Error: " << boost::diagnostic_information(e) << myUtilFuncs::getDateTimeLocal() << ENDLINE;
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << "Error: " << e.what() << " " << myUtilFuncs::getDateTimeLocal() << ENDLINE;
+    }
+
+    std::cout << "Program Stopped: " << myUtilFuncs::getDateTimeLocal() << ENDLINE;
+
+    return 0;
+}
