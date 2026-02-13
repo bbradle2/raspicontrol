@@ -4,10 +4,14 @@ int main(int argc, char **argv)
 {
     try
     {
+
+        // fmt::print("Hello, {}!{}", "world" , ENDLINE);
+        // fmt::print("The answer is {{{}}}.{}", 42, ENDLINE);
+
         std::cout << "Build Date: " << __DATE__ << ENDLINE;
         std::cout << "Build Time: " << __TIME__ << ENDLINE;
         std::cout << ENDLINE;
-      
+
         std::cout << "Program Started: " << myUtilFuncs::getDateTimeLocal() << ENDLINE;
 
         std::cout << "argc: " << argc << ENDLINE;

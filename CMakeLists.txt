@@ -18,6 +18,7 @@ include (CTest)
 
 #find_package(SQLite3 REQUIRED)
 find_package(PkgConfig REQUIRED)
+find_package(fmt REQUIRED)
 find_package(Poco CONFIG REQUIRED Foundation Net Util Crypto NetSSL Data DataSQLite DataMySQL DataPostgreSQL)
 find_package(Boost REQUIRED COMPONENTS thread)
 find_package(Boost REQUIRED COMPONENTS timer)
@@ -33,6 +34,8 @@ pkg_search_module(GLIB REQUIRED glib-2.0)
 #set(CMAKE_OBJC_STANDARD 23)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_C_STANDARD 23)
+set(CMAKE_C_STANDARD_REQUIRED ON)
 #enable_language(OBJCXX)
 
 # set(CMAKE_C_COMPILER clang) #CMAKE_CXX_STANDARD has to = 20 to use clang
@@ -99,6 +102,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC Boost::timer)
 target_link_libraries(${PROJECT_NAME} PUBLIC Boost::json)
 target_link_libraries(${PROJECT_NAME} PUBLIC Boost::url)
 target_link_libraries(${PROJECT_NAME} PUBLIC Boost::filesystem)
+target_link_libraries(${PROJECT_NAME} PUBLIC fmt::fmt)
 
 
 

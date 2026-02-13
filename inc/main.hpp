@@ -30,6 +30,7 @@
 #include <complex>
 #include <cmath>
 #include <iomanip>
+#include <fmt/core.h>
 
 
 //#include <Poco/Crypto/CipherFactory.h>
