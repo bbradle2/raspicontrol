@@ -1129,3 +1129,7 @@ int main(int argc, char **argv)
 
     return 0;
 }
+
+#include <fmt/core.h>
+fmt::print("Hello, {}!{}", "world" , ENDLINE);
+fmt::print("The answer is {{{}}}.{}", 42, ENDLINE);

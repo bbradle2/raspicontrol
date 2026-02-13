@@ -1,6 +1,6 @@
-#include <myUtilFuncs.hpp>
+#include <UtilFuncs.hpp>
 
-std::string myUtilFuncs::getDateTimeLocal()
+std::string UtilFuncs::getDateTimeLocal()
 {
     std::time_t now = std::time(nullptr);
     std::tm *local_time = std::localtime(&now);
@@ -15,7 +15,7 @@ std::string myUtilFuncs::getDateTimeLocal()
     return asc + " ";
 }
 
-std::string myUtilFuncs::encrypt(const std::string &input, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv)
+std::string UtilFuncs::encrypt(const std::string &input, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv)
 {
     std::string cipher;
 
@@ -33,7 +33,7 @@ std::string myUtilFuncs::encrypt(const std::string &input, const std::vector<uin
     return cipher;
 }
 
-std::string myUtilFuncs::decrypt(const std::string &cipher_text, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv)
+std::string UtilFuncs::decrypt(const std::string &cipher_text, const std::vector<uint8_t> &key, const std::vector<uint8_t> &iv)
 {
     std::string plain_text;
 

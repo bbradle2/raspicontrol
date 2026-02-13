@@ -110,7 +110,7 @@
 
 //Project project headers
 #include <defer.hpp>
-#include <myUtilFuncs.hpp>
+#include <UtilFuncs.hpp>
 #include <gpioController.hpp>
 #include <mio.hpp>
 #include <file.hpp>
@@ -153,3 +153,6 @@ using namespace std;
 
 using namespace RaspberryPiDefines;
 #define ENDLINE "\n"
+
+int stopProgram();
+void startProgram(int argc, char **argv);

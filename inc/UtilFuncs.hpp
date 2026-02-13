@@ -15,7 +15,7 @@
 #include <cryptopp/osrng.h>
 #include <cryptopp/base64.h>
 
-class myUtilFuncs
+class UtilFuncs
 {
     // function declarations
     public:
