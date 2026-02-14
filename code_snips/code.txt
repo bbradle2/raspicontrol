@@ -1133,3 +1133,18 @@ int main(int argc, char **argv)
 #include <fmt/core.h>
 fmt::print("Hello, {}!{}", "world" , ENDLINE);
 fmt::print("The answer is {{{}}}.{}", 42, ENDLINE);
+
+
+
+
+// change to the "/" directory
+int nochdir = 0;
+
+// redirect standard input, output and error to /dev/null
+// this is equivalent to "closing the file descriptors"
+int noclose = 0;
+
+if (daemon(nochdir, noclose))
+    perror("daemon");
+
+sleep(60);

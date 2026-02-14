@@ -1,10 +1,11 @@
 #include <main.hpp>
 
-int main(int argc, char **argv)
+
+int main(int argc, char *argv[])
 {
     try
     {
-        startProgram(argc, &*argv);
+        startProgram(argc, argv);      
     }
     catch (const Poco::Exception &e)
     {
@@ -19,11 +20,13 @@ int main(int argc, char **argv)
         std::cerr << "Error: " << e.what() << " " << UtilFuncs::getDateTimeLocal() << ENDLINE;
     }
 
+    
     return stopProgram();
 }
 
-void startProgram(int argc, char **argv)
+void startProgram(int argc, char *argv[])
 {
+
     std::cout << "Build Date: " << __DATE__ << ENDLINE;
     std::cout << "Build Time: " << __TIME__ << ENDLINE;
     std::cout << ENDLINE;

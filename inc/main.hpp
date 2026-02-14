@@ -102,6 +102,7 @@
 #include <boost/asio.hpp>
 #include <boost/version.hpp>
 
+
 #include <sqlite3.h>
 #include <gpiod.hpp>
 #include <httplib.h>
@@ -152,7 +153,15 @@ using namespace std::literals;
 using namespace std;
 
 using namespace RaspberryPiDefines;
-#define ENDLINE "\n"
+
+
+#if defined(__linux__) || defined(__FreeBSD__)
+    #define ENDLINE "\n"
+#elif defined(_WIN64) || defined(_M_ALPHA) || defined(_WIN32)
+    #define ENDLINE "\r\n"
+#else
+    #define ENDLINE "\n"
+#endif
 
 int stopProgram();
-void startProgram(int argc, char **argv);
+void startProgram(int argc, char *argv[]);
