@@ -1148,3 +1148,8 @@ if (daemon(nochdir, noclose))
     perror("daemon");
 
 sleep(60);
+
+
+
+std::filesystem::path path = std::filesystem::current_path();
+auto f = read_file((path.parent_path().string() + "/" + "WebNotifier.html").c_str());

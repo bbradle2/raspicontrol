@@ -1,4 +1,5 @@
-#pragma once
+#ifndef DEFER_H
+#define DEFER_H
 template <typename F>
 struct Defer
 {
@@ -12,3 +13,5 @@ Defer<F> defer(F f)
 {
     return Defer<F>(f);
 }
+
+#endif

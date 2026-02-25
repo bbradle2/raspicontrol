@@ -1,11 +1,23 @@
-cmake_minimum_required(VERSION 4.1.0)
+cmake_minimum_required(VERSION 4.2.3)
 
-project(raspicontrol VERSION 1.5)
+project(raspicontrol VERSION 1.5.4 DESCRIPTION "Raspberrypi GPIO control") 
+set(PROJECT_DESCRIPTION ${CMAKE_PROJECT_DESCRIPTION})
+set(BRIAN_CUSTOM "Custom variable test") 
+
+# string(TIMESTAMP BUILD_DATE_VAR "%Y-%m-%d" )
+# string(TIMESTAMP BUILD_TIME_VAR "%H:%M:%S" )
+
+configure_file(
+    ${PROJECT_SOURCE_DIR}/config/config.h.in
+    ${PROJECT_SOURCE_DIR}/inc/config.h
+)
+
 add_compile_definitions(RASP5) # Equivalent to #define RASP5
 
 #enable_testing()
-set(CMAKE_CTEST_ARGUMENTS "-V" )
+set(CMAKE_CTEST_ARGUMENTS -V )
 include (CTest)
+
 
 #set(CTEST_MEMORYCHECK_TYPE Valgrind)
 #SET(GCC_COVERAGE_COMPILE_FLAGS "-fprofile-arcs -ftest-coverage")
@@ -17,17 +29,17 @@ include (CTest)
 #ctest -T memcheck --test-dir build
 
 #find_package(SQLite3 REQUIRED)
-find_package(PkgConfig REQUIRED)
-find_package(fmt REQUIRED)
-find_package(Poco CONFIG REQUIRED Foundation Net Util Crypto NetSSL Data DataSQLite DataMySQL DataPostgreSQL)
-find_package(Boost REQUIRED COMPONENTS thread)
-find_package(Boost REQUIRED COMPONENTS timer)
-find_package(Boost REQUIRED COMPONENTS json)
-find_package(Boost REQUIRED COMPONENTS url)
-find_package(Boost REQUIRED COMPONENTS filesystem)
+#find_package(PkgConfig REQUIRED)
+# find_package(fmt REQUIRED)
+# find_package(Poco CONFIG REQUIRED Foundation Net Util Crypto NetSSL Data DataSQLite DataMySQL DataPostgreSQL)
+# find_package(Boost REQUIRED COMPONENTS thread)
+# find_package(Boost REQUIRED COMPONENTS timer)
+# find_package(Boost REQUIRED COMPONENTS json)
+# find_package(Boost REQUIRED COMPONENTS url)
+# find_package(Boost REQUIRED COMPONENTS filesystem)
 
 
-pkg_search_module(GLIB REQUIRED glib-2.0)
+#pkg_search_module(GLIB REQUIRED glib-2.0)
 #find_package(SQLite3 REQUIRED)
 #find_package(Poco REQUIRED MySQL::client)
 #include_directories(${Poco_INCLUDE_DIRECTORIES})
@@ -38,8 +50,8 @@ set(CMAKE_C_STANDARD 23)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 #enable_language(OBJCXX)
 
-# set(CMAKE_C_COMPILER clang) #CMAKE_CXX_STANDARD has to = 20 to use clang
-# set(CMAKE_CXX_COMPILER clang++)
+#set(CMAKE_C_COMPILER clang) #CMAKE_CXX_STANDARD has to = 20 to use clang
+#set(CMAKE_CXX_COMPILER clang++)
 #add_compile_options(-W -Wall -Werror)
   # For a general case, not recommended, to preserve exiting cache variable
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror")
@@ -47,8 +59,8 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 
 #include_directories(${MYSQL_INCLUDE_DIR})
 #include_directories(${Boost_INCLUDE_DIRS})
-file(GLOB SOURCES_CPP CONFIGURE_DEPENDS "src/*.cpp")
-file(GLOB SOURCES_C CONFIGURE_DEPENDS "src/*.c")
+file(GLOB SOURCES_CPP CONFIGURE_DEPENDS src/*.cpp)
+file(GLOB SOURCES_C CONFIGURE_DEPENDS src/*.c)
 #file(GLOB SOURCES_OBJC CONFIGURE_DEPENDS "src/*.m")
 set(SOURCES_FILES ${SOURCES_CPP} ${SOURCES_C})
 
@@ -68,7 +80,7 @@ add_test(NAME ${PROJECT_NAME}_memcheck
       --show-leak-kinds=definite
       --track-fds=yes
       $<TARGET_FILE:${PROJECT_NAME}>
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} )
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} ) 
 
 add_test(NAME ${PROJECT_NAME}_helgrind
     COMMAND valgrind
@@ -86,29 +98,27 @@ add_test(NAME ${PROJECT_NAME}_cachegrind
       $<TARGET_FILE:${PROJECT_NAME}>
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
+#target_link_options(${PROJECT_NAME} PRIVATE -Bstatic)
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/inc)
-target_include_directories(${PROJECT_NAME} PRIVATE ${GLIB_INCLUDE_DIRS})
+#target_include_directories(${PROJECT_NAME} PRIVATE ${GLIB_INCLUDE_DIRS})
 #target_include_directories(${PROJECT_NAME} PRIVATE  /usr/lib/gcc/aarch64-linux-gnu/12/include)
 #target_include_directories(${PROJECT_NAME} PRIVATE  /usr/include/GNUstep)
 
 #target_link_libraries(${PROJECT_NAME} LINK_PRIVATE SQLite::SQLite3)
 
-target_link_libraries(${PROJECT_NAME} LINK_PRIVATE Poco::Net Poco::Foundation Poco::Util Poco::Crypto Poco::NetSSL Poco::Data Poco::DataSQLite Poco::DataMySQL Poco::DataPostgreSQL)
+# target_link_libraries(${PROJECT_NAME} LINK_PRIVATE Poco::Net Poco::Foundation Poco::Util Poco::Crypto Poco::NetSSL Poco::Data Poco::DataSQLite Poco::DataMySQL Poco::DataPostgreSQL)
 target_link_libraries(${PROJECT_NAME} LINK_PRIVATE gpiodcxx)
-target_link_libraries(${PROJECT_NAME} LINK_PRIVATE uuid)
+# target_link_libraries(${PROJECT_NAME} LINK_PRIVATE uuid)
 target_link_libraries(${PROJECT_NAME} LINK_PRIVATE crypto++)
-target_link_libraries(${PROJECT_NAME} PUBLIC Boost::thread)
-target_link_libraries(${PROJECT_NAME} PUBLIC Boost::timer)
-target_link_libraries(${PROJECT_NAME} PUBLIC Boost::json)
-target_link_libraries(${PROJECT_NAME} PUBLIC Boost::url)
-target_link_libraries(${PROJECT_NAME} PUBLIC Boost::filesystem)
-target_link_libraries(${PROJECT_NAME} PUBLIC fmt::fmt)
-
-
-
+# target_link_libraries(${PROJECT_NAME} PUBLIC Boost::thread)
+# target_link_libraries(${PROJECT_NAME} PUBLIC Boost::timer)
+# target_link_libraries(${PROJECT_NAME} PUBLIC Boost::json)
+# target_link_libraries(${PROJECT_NAME} PUBLIC Boost::url)
+# target_link_libraries(${PROJECT_NAME} PUBLIC Boost::filesystem)
+# target_link_libraries(${PROJECT_NAME} PUBLIC fmt::fmt)
 
 #target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
-target_link_libraries(${PROJECT_NAME} PRIVATE ${GLIB_LIBRARIES})
+#target_link_libraries(${PROJECT_NAME} PRIVATE ${GLIB_LIBRARIES})
 #target_link_libraries(${PROJECT_NAME} PRIVATE gnustep-base objc)
 
 
@@ -130,8 +140,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE ${GLIB_LIBRARIES})
 
     # print_all_variables()
 
-    file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/WebNotifier.html
-     DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/WebNotifier.html
+  DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
     # file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/gggg.json
     #  DESTINATION /tmp)

@@ -1,9 +1,10 @@
 #ifndef BOOST_JSON_EXAMPLE_FILE_HPP
 #define BOOST_JSON_EXAMPLE_FILE_HPP
 
-#include <boost/json/detail/config.hpp>
 #include <cstdio>
 #include <string>
+#include <exception>
+#include <system_error> // for std::error_code
 
 class file
 {
@@ -11,9 +12,9 @@ class file
     long size_ = 0;
 
     void
-    fail(boost::system::error_code &ec)
+    fail(std::error_code &ec)
     {
-        ec.assign(errno, boost::system::generic_category());
+        ec.assign(errno, std::generic_category());
     }
 
 public:
@@ -60,7 +61,7 @@ public:
     open(
         char const *path,
         char const *mode,
-        boost::system::error_code &ec)
+        std::error_code &ec)
     {
         close();
 #if defined(_MSC_VER)
@@ -90,10 +91,10 @@ public:
         char const *path,
         char const *mode)
     {
-        boost::system::error_code ec;
+        std::error_code ec;
         open(path, mode, ec);
         if (ec)
-            throw boost::system::system_error(ec);
+            throw std::system_error(ec);
     }
 
     long
@@ -109,27 +110,27 @@ public:
     }
 
     std::size_t
-    read(char *data, std::size_t size, boost::system::error_code &ec)
+    read(char *data, std::size_t size, std::error_code &ec)
     {
         auto const nread = std::fread(data, 1, size, f_);
         if (std::ferror(f_))
-            ec.assign(errno, boost::system::generic_category());
+            ec.assign(errno, std::generic_category());
         return nread;
     }
 
     std::size_t
     read(char *data, std::size_t size)
     {
-        boost::system::error_code ec;
+        std::error_code ec;
         auto const nread = read(data, size, ec);
         if (ec)
-            throw boost::system::system_error(ec);
+            throw std::system_error(ec);
         return nread;
     }
 };
 
 inline std::string
-read_file(char const *path, boost::system::error_code &ec)
+read_file(char const *path, std::error_code &ec)
 {
     file f;
     f.open(path, "r", ec);
@@ -146,10 +147,10 @@ read_file(char const *path, boost::system::error_code &ec)
 inline std::string
 read_file(char const *path)
 {
-    boost::system::error_code ec;
+    std::error_code ec;
     auto s = read_file(path, ec);
     if (ec)
-        throw boost::system::system_error(ec);
+        throw std::system_error(ec);
     return s;
 }
 
