@@ -1,25 +1,30 @@
-#include <main.hpp>
+#include <raspConfig.hpp>
 
 int main(int argc, char *argv[])
 {
+    logger::log("Begin");
+
     try
     {
         startProgram();
         printProgramInformation();
-        printProgramArgs(argc, argv);     
+        printProgramArgs(argc, argv);
         runProgram(argc, argv);
     }
     catch (const std::exception &e)
     {
         std::cerr << "Error: " << e.what() << "," << utils::getDateTimeLocal() << ENDLINE;
     }
+    
+    stopProgram();
 
-    return stopProgram();
+    logger::log("End");
+    return 0;
 }
 
 void printProgramInformation()
 {
-    utils::log("Begin");
+    logger::log("Begin");
 
     char character = '-';
     int times = 55;
@@ -32,51 +37,52 @@ void printProgramInformation()
     std::cout << "Build Time:  " << __TIME__ << ENDLINE;
     std::cout << std::string(times, character) << ENDLINE;
 
-    utils::log("End");
-    std::cout << ENDLINE;
+    logger::log("End");
 }
 
 void startProgram()
 {
-    utils::log("Begin");
+    logger::log("Begin");
+
     std::cout << PROJECT_NAME << " Started: " << utils::getDateTimeLocal() << ENDLINE;
-    utils::log("End");
-    std::cout << ENDLINE;
+
+    logger::log("End");
 }
 
 void printProgramArgs(int argc, char *argv[])
 {
-    utils::log("Begin");
+    logger::log("Begin");
+
     std::cout << "argc: " << argc << ENDLINE;
     for (int i = 0; i < argc; i++)
     {
         std::cout << "argv[" << i << "]: " << argv[i] << ENDLINE;
     }
 
-    utils::log("End");
-    std::cout << ENDLINE;
+    logger::log("End");
 }
 
 int runProgram(int argc, char *argv[])
 {
-    utils::log("Begin");
+    logger::log("Begin");
     // Do whatever
-    gpioController gpioCtl;
-    gpioCtl.getGpios()[GPIO23]->setGpioValue(1);
-    gpioCtl.getGpios()[GPIO24]->setGpioValue(1);
+    // gpioController gpioCtl;
 
-    gpioCtl.getGpios()[GPIO23]->setGpioValue(0);
-    gpioCtl.getGpios()[GPIO24]->setGpioValue(0);
-
-    utils::log("End");
-    std::cout << ENDLINE;
+    // gpioCtl.getGpios()[GPIO23]->setGpioValue(1);
+    // gpioCtl.getGpios()[GPIO24]->setGpioValue(1);
+    // //std::this_thread::sleep_for(1000ms);
+    // gpioCtl.getGpios()[GPIO23]->setGpioValue(0);
+    // gpioCtl.getGpios()[GPIO24]->setGpioValue(0);
+    logger::log("End");
     return 0;
 }
 
 int stopProgram()
 {
-    utils::log("Begin");
+    logger::log("Begin");
+
     std::cout << PROJECT_NAME << " Stopped: " << utils::getDateTimeLocal() << std::endl;
-    utils::log("End");
+
+    logger::log("End");
     return 0;
 }

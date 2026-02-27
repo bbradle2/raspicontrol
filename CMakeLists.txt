@@ -8,11 +8,11 @@ set(BRIAN_CUSTOM "Custom variable test")
 # string(TIMESTAMP BUILD_TIME_VAR "%H:%M:%S" )
 
 configure_file(
-    ${PROJECT_SOURCE_DIR}/config/config.h.in
-    ${PROJECT_SOURCE_DIR}/inc/config.h
+    ${PROJECT_SOURCE_DIR}/config/raspConfig.hpp.in
+    ${PROJECT_SOURCE_DIR}/inc/raspConfig.hpp
 )
 
-add_compile_definitions(RASP5) # Equivalent to #define RASP5
+#add_compile_definitions(RASP5) # Equivalent to #define RASP5
 
 #enable_testing()
 set(CMAKE_CTEST_ARGUMENTS -V )
@@ -109,7 +109,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/inc)
 # target_link_libraries(${PROJECT_NAME} LINK_PRIVATE Poco::Net Poco::Foundation Poco::Util Poco::Crypto Poco::NetSSL Poco::Data Poco::DataSQLite Poco::DataMySQL Poco::DataPostgreSQL)
 target_link_libraries(${PROJECT_NAME} LINK_PRIVATE gpiodcxx)
 # target_link_libraries(${PROJECT_NAME} LINK_PRIVATE uuid)
-target_link_libraries(${PROJECT_NAME} LINK_PRIVATE crypto++)
+# target_link_libraries(${PROJECT_NAME} LINK_PRIVATE crypto++)
 # target_link_libraries(${PROJECT_NAME} PUBLIC Boost::thread)
 # target_link_libraries(${PROJECT_NAME} PUBLIC Boost::timer)
 # target_link_libraries(${PROJECT_NAME} PUBLIC Boost::json)

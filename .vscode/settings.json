@@ -22,7 +22,7 @@
         "cwchar": "cpp",
         "cwctype": "cpp",
         "deque": "cpp",
-        "string": "cpp",
+        "string": "cpp, in",
         "unordered_map": "cpp",
         "vector": "cpp",
         "exception": "cpp",
