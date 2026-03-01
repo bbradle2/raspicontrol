@@ -13,7 +13,7 @@ private:
 public:
     gpioController()
     {
-        logger::log("Begin");
+        utils::log("Begin");
         // auto lineTest = gpiod::find_line("GPIO24");
         // std::cout << lineTest.name() << "  " << lineTest.offset() << std::endl;
         // for (const auto &chip : gpiod::make_chip_iter())
@@ -31,12 +31,12 @@ public:
 
         _gpios.emplace(GPIO23, new gpioObject{_chip, PIN23, GPIOD_LINE_REQUEST_DIRECTION_OUTPUT});
         _gpios.emplace(GPIO24, new gpioObject{_chip, PIN24, GPIOD_LINE_REQUEST_DIRECTION_OUTPUT});
-        logger::log("End");
+        utils::log("End");
     }
 
     ~gpioController()
     {
-        logger::log("Begin");
+        utils::log("Begin");
 
         for (auto gpio : _gpios)
         {
@@ -49,16 +49,16 @@ public:
 
         _gpios.clear();
 
-        logger::log("End");
+        utils::log("End");
     }
 
     std::map<std::string, gpioObject *> getGpios()
     {
-        logger::log("Begin");
+        utils::log("Begin");
         if (_gpios.size() < 1)
             throw std::length_error("No Gpios allocated.");
 
-        logger::log("End");
+        utils::log("End");
         return _gpios;
     }
 };

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 4.2.3)
 
-project(raspicontrol VERSION 1.5.4 DESCRIPTION "Raspberrypi GPIO control") 
+project(raspicontrol VERSION 1.5.5 DESCRIPTION "Raspberrypi GPIO control") 
 set(PROJECT_DESCRIPTION ${CMAKE_PROJECT_DESCRIPTION})
 set(BRIAN_CUSTOM "Custom variable test") 
 
